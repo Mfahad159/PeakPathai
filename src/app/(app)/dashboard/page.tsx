@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Opportunity } from '@/types'
+import Link from 'next/link'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -154,10 +155,17 @@ export default function DashboardPage() {
     <div className="min-h-screen px-6 py-10">
       <div className="mx-auto max-w-4xl space-y-6">
 
+        {/* ── Top Navigation / Quick Links ── */}
+        <div className="glass-card mb-8 flex justify-center gap-6 p-4 text-sm font-semibold sm:justify-start">
+          <Link href="/dashboard" className="text-orange-400 border-b-2 border-orange-500 pb-1">Dashboard</Link>
+          <Link href="/explore" className="text-zinc-400 transition-colors hover:text-white">Explore</Link>
+          <Link href="/profile" className="text-zinc-400 transition-colors hover:text-white">Profile</Link>
+        </div>
+
         {/* ── Header ── */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>Dashboard</p>
+            <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>Overview</p>
             <h1 className="mt-1 text-3xl font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
               Welcome back, {firstName} 👋
             </h1>

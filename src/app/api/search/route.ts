@@ -77,9 +77,15 @@ export async function POST(request: NextRequest) {
 
     // ── Parse Custom Search Preferences ───────────────────────────────
     const body = await request.json().catch(() => ({}))
+    
+    // Convert array back to a comma separated string for the model prompt
+    const countryString = body.target_countries?.length > 0 
+      ? body.target_countries.join(' and ') 
+      : profile.country
+
     const searchPrefs = {
       ...profile,
-      country: body.target_country || profile.country,
+      country: countryString,
       funding_preference: body.funding_preference || profile.funding_preference
     }
 

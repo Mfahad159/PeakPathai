@@ -121,6 +121,9 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [quotaError, setQuotaError] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [targetCountry, setTargetCountry] = useState('')
+  const [fundingPref, setFundingPref] = useState('any')
+  const [showPrefs, setShowPrefs] = useState(false)
 
   // week start: Monday
   function getWeekStart() {
@@ -136,11 +139,16 @@ export default function DashboardPage() {
     if (!user) return
 
     const [{ data: profileData }, { data: quotaData }] = await Promise.all([
-      supabase.from('profiles').select('full_name, degree_level, field_of_study, country').eq('id', user.id).single(),
+      supabase.from('profiles').select('full_name, degree_level, field_of_study, country, funding_preference').eq('id', user.id).single(),
       supabase.from('search_quota').select('searches_used').eq('user_id', user.id).eq('week_start', getWeekStart()).maybeSingle(),
     ])
 
     setProfile(profileData)
+    if (profileData) {
+      setTargetCountry(profileData.country || '')
+      setFundingPref(profileData.funding_preference || 'any')
+    }
+
     const used = quotaData?.searches_used ?? 0
     setQuota({ searches_used: used, searches_remaining: 5 - used })
   }, [])
@@ -153,7 +161,14 @@ export default function DashboardPage() {
     setQuotaError(false)
 
     try {
-      const res = await fetch('/api/search', { method: 'POST' })
+      const res = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          target_country: targetCountry,
+          funding_preference: fundingPref,
+        })
+      })
       const data = await res.json()
 
       if (res.status === 429) {
@@ -212,14 +227,57 @@ export default function DashboardPage() {
               <p className="mb-5 text-xs" style={{ color: 'var(--color-muted)' }}>
                 We'll query the web in real-time and use AI to match results to your profile.
               </p>
-              <button
-                onClick={handleSearch}
-                disabled={(quota?.searches_remaining ?? 1) <= 0}
-                className="rounded-xl px-8 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.03] hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: 'var(--color-primary)' }}
-              >
-                Find Opportunities →
-              </button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={handleSearch}
+                  disabled={(quota?.searches_remaining ?? 1) <= 0}
+                  className="rounded-xl px-8 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.03] hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--color-primary)' }}
+                >
+                  Find Opportunities →
+                </button>
+                <button
+                  onClick={() => setShowPrefs(!showPrefs)}
+                  className="rounded-xl border px-6 py-3 text-sm font-medium transition-colors hover:text-white"
+                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-muted)' }}
+                >
+                   Edit Preferences
+                </button>
+              </div>
+
+              {/* Preferences Panel */}
+              {showPrefs && (
+                <div className="mx-auto mt-6 max-w-sm rounded-xl border p-4 text-left transition-all" style={{ borderColor: 'var(--color-border)', background: 'rgba(11,14,26,0.6)' }}>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-xs font-semibold text-white">Target Country (or Region)</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border bg-transparent px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-orange-500 focus:outline-none"
+                      style={{ borderColor: 'var(--color-border)' }}
+                      placeholder="e.g. UK, Germany, Global..."
+                      value={targetCountry}
+                      onChange={(e) => setTargetCountry(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-white">Funding Requirements</label>
+                    <select
+                      className="w-full rounded-lg border bg-transparent px-3 py-2 text-sm text-white focus:border-orange-500 focus:outline-none [&>option]:bg-[#0b0e1a]"
+                      style={{ borderColor: 'var(--color-border)' }}
+                      value={fundingPref}
+                      onChange={(e) => setFundingPref(e.target.value)}
+                    >
+                      <option value="any">Any Funding Type</option>
+                      <option value="fully_funded">Fully Funded Only</option>
+                      <option value="partial">Partial Funding Accepted</option>
+                      <option value="research_fellowship">Research Fellowship / Stipend</option>
+                    </select>
+                  </div>
+                  <p className="mt-4 text-[10px]" style={{ color: 'var(--color-muted)' }}>
+                    *These preferences only apply to this specific search. They will not permanently overwrite your core profile.
+                  </p>
+                </div>
+              )}
             </>
           )}
 

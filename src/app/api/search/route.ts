@@ -75,8 +75,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // ── Parse Custom Search Preferences ───────────────────────────────
+    const body = await request.json().catch(() => ({}))
+    const searchPrefs = {
+      ...profile,
+      country: body.target_country || profile.country,
+      funding_preference: body.funding_preference || profile.funding_preference
+    }
+
     // ── Run Pipeline ──────────────────────────────────────────────────
-    const rawResults = await searchOpportunities(profile as Profile)
+    const rawResults = await searchOpportunities(searchPrefs as Profile)
 
     if (rawResults.length === 0) {
       return NextResponse.json({ error: 'no_results' }, { status: 200 })
@@ -126,6 +134,11 @@ export async function POST(request: NextRequest) {
         { onConflict: 'user_id,week_start' }
       )
 
+    return NextResponse.json({
+      opportunities: inserted,
+      searches_used: searchesUsed + 1,
+      searches_remaining: 4 - searchesUsed,
+    })
   } catch (err: any) {
     console.error('Search pipeline error:', err)
     return NextResponse.json({ error: err.message ?? 'Internal error' }, { status: 500 })

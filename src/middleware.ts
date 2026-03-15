@@ -3,9 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   })
 
   const supabase = createServerClient(
@@ -17,11 +15,11 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
           response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
+            request: { headers: request.headers },
           })
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
@@ -36,20 +34,54 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const url = request.nextUrl.clone()
+  const protectedRoutes = ['/dashboard', '/onboarding', '/profile', '/opportunities']
+  const isProtected = protectedRoutes.some((r) => url.pathname.startsWith(r))
+  const isAuthPage = url.pathname === '/login' || url.pathname === '/signup'
 
-  // Redirect logic
-  if (!user && url.pathname.startsWith('/(app)') || !user && (url.pathname === '/dashboard' || url.pathname === '/onboarding' || url.pathname === '/profile' || url.pathname.startsWith('/opportunities'))) {
-      // Actually, since (app) is a route group, the URLs don't have (app) in them.
-      // We need to check for specific routes that belong to the app.
-      if (['/dashboard', '/onboarding', '/profile'].includes(url.pathname) || url.pathname.startsWith('/opportunities')) {
-          url.pathname = '/login'
-          return NextResponse.redirect(url)
-      }
+  // Not logged in → send to login
+  if (!user && isProtected) {
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
   }
 
-  if (user && (url.pathname === '/login' || url.pathname === '/signup')) {
-    url.pathname = '/dashboard'
+  // Logged in + auth page → check onboarding
+  if (user && isAuthPage) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .single()
+
+    url.pathname = profile?.onboarding_complete ? '/dashboard' : '/onboarding'
     return NextResponse.redirect(url)
+  }
+
+  // Logged in + on dashboard/other app route → check onboarding
+  if (user && url.pathname === '/dashboard') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile?.onboarding_complete) {
+      url.pathname = '/onboarding'
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // Logged in + already on /onboarding but onboarding is complete → send to dashboard
+  if (user && url.pathname === '/onboarding') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.onboarding_complete) {
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
   }
 
   return response
@@ -57,13 +89,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

@@ -126,29 +126,6 @@ export async function POST(request: NextRequest) {
         { onConflict: 'user_id,week_start' }
       )
 
-    // ── Send Email Verification ───────────────────────────────────────
-    if (inserted.length > 0 && user.email) {
-      const firstName = profile.full_name?.split(' ')[0] ?? 'Scholar'
-      
-      try {
-        await resend.emails.send({
-          from: 'PeakPath AI <noreply@peakpathai.com>', 
-          to: user.email,
-          subject: `We found ${inserted.length} new opportunities for you 🎯`,
-          react: OpportunitiesEmail({ opportunities: parsed as any, firstName }),
-        })
-        console.log(`Email sent to ${user.email}`)
-      } catch (emailError) {
-        console.error('Failed to send email:', emailError)
-        // We don't throw here; we still want to return the UI results if email fails
-      }
-    }
-
-    return NextResponse.json({
-      opportunities: inserted,
-      searches_used: searchesUsed + 1,
-      searches_remaining: 4 - searchesUsed,
-    })
   } catch (err: any) {
     console.error('Search pipeline error:', err)
     return NextResponse.json({ error: err.message ?? 'Internal error' }, { status: 500 })

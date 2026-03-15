@@ -2,7 +2,14 @@ import { Opportunity } from '@/types'
 import { TavilyResult } from '@/lib/tavily/search'
 
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions'
-const MODEL = 'deepseek/deepseek-chat'
+
+// OpenRouter Fallback Routing: It will try these models in order.
+// If DeepSeek throws a 500 error, it instantly falls back to Claude Haiku, then GPT-3.5.
+const FALLBACK_MODELS = [
+  'deepseek/deepseek-chat',
+  'anthropic/claude-3-haiku',
+  'openai/gpt-3.5-turbo',
+]
 
 const SYSTEM_PROMPT = `You are a structured data extraction assistant.
 Your ONLY job is to extract scholarship and research opportunity data from raw web search results.
@@ -50,7 +57,8 @@ export async function parseOpportunities(
       'X-Title': 'PeakPath AI',
     },
     body: JSON.stringify({
-      model: MODEL,
+      models: FALLBACK_MODELS,
+      route: 'fallback', // Explicitly tell OpenRouter to use fallback routing
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userContent },
@@ -62,6 +70,9 @@ export async function parseOpportunities(
 
   if (!res.ok) {
     const err = await res.text()
+    console.error('--- OPENROUTER RAW ERROR ---')
+    console.error(err)
+    console.error('----------------------------')
     throw new Error(`OpenRouter API error ${res.status}: ${err}`)
   }
 
@@ -75,10 +86,20 @@ export async function parseOpportunities(
     .trim()
 
   try {
-    const parsed: RawOpportunity[] = JSON.parse(cleaned)
-    if (!Array.isArray(parsed)) throw new Error('Not an array')
+    // Attempt standard parse first
+    let parsed: any = JSON.parse(cleaned)
+    
+    // Sometimes the model wraps the array in an object like { "opportunities": [...] }
+    if (!Array.isArray(parsed)) {
+      if (parsed.opportunities && Array.isArray(parsed.opportunities)) {
+        parsed = parsed.opportunities
+      } else {
+         console.error('DeepSeek returned an object but no opportunities array:', parsed)
+         return []
+      }
+    }
 
-    return parsed.map((item) => ({
+    return parsed.map((item: any) => ({
       title: item.title ?? 'Untitled',
       provider: item.provider ?? 'Unknown',
       deadline: item.deadline ?? 'Not specified',
@@ -89,7 +110,7 @@ export async function parseOpportunities(
       source_url: item.source_url ?? '',
     }))
   } catch (err) {
-    console.error('DeepSeek returned malformed JSON:', rawText)
+    console.error('Model returned malformed JSON or plain text:', rawText)
     console.error('Parse error:', err)
     return []
   }

@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       .select('searches_used')
       .eq('user_id', user.id)
       .eq('week_start', weekStart)
-      .single()
+      .maybeSingle()
 
     const searchesUsed = quota?.searches_used ?? 0
 

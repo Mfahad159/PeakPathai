@@ -145,6 +145,8 @@ export default function DashboardPage() {
   }
 
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Scholar'
+  const unseenCount = opportunities.filter(o => !o.seen).length
+
   const daysUntilReset = (() => {
     const now = new Date()
     const day = now.getDay()
@@ -155,25 +157,37 @@ export default function DashboardPage() {
     <div className="min-h-screen px-6 py-10">
       <div className="mx-auto max-w-4xl space-y-6">
 
-        {/* ── Top Navigation / Quick Links ── */}
-        <div className="glass-card mb-8 flex justify-center gap-6 p-4 text-sm font-semibold sm:justify-start">
-          <Link href="/dashboard" className="text-orange-400 border-b-2 border-orange-500 pb-1">Dashboard</Link>
-          <Link href="/explore" className="text-zinc-400 transition-colors hover:text-white">Explore</Link>
-          <Link href="/profile" className="text-zinc-400 transition-colors hover:text-white">Profile</Link>
-        </div>
+
 
         {/* ── Header ── */}
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>Overview</p>
-            <h1 className="mt-1 text-3xl font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
+            <h1 className="mt-1 text-3xl font-bold text-white relative inline-block" style={{ fontFamily: 'Georgia, serif' }}>
               Welcome back, {firstName} 👋
+              {unseenCount > 0 && (
+                <span className="absolute -top-1 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg animate-bounce">
+                  {unseenCount}
+                </span>
+              )}
             </h1>
             <p className="mt-1 text-xs" style={{ color: 'var(--color-muted)' }}>
               {profile?.field_of_study} · {profile?.country} · {profile?.degree_level}
             </p>
           </div>
         </div>
+
+        {/* ── Unseen Alert ── */}
+        {unseenCount > 0 && (
+          <div className="glass-card flex items-center justify-between border-orange-500/50 bg-orange-500/10 p-4">
+            <div className="flex items-center gap-3 text-orange-400">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 animate-pulse">
+                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium">You have {unseenCount} new {unseenCount === 1 ? 'opportunity' : 'opportunities'} to review!</span>
+            </div>
+          </div>
+        )}
 
         {/* ── Quota Bar ── */}
         <QuotaBar quota={quota} />

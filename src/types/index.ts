@@ -9,6 +9,8 @@ export interface Profile {
   country: string | null;
   funding_preference: FundingPreference | null;
   onboarding_complete: boolean;
+  notification_day?: number;
+  notification_hour?: number;
   created_at: string;
 }
 

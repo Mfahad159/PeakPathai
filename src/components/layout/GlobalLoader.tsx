@@ -57,7 +57,7 @@ function LoaderContent() {
 
         {/* Pulsing PeakPath Text */}
         <h1 
-          className="animate-fade-in-out z-10 text-3xl font-extrabold tracking-tight text-white drop-shadow-2xl m-0 p-0 text-center" 
+          className="animate-fade-in-out z-10 text-3xl font-extrabold tracking-tight text-white drop-shadow-2xl m-0 p-20 text-center" 
           style={{ fontFamily: 'Georgia, serif' }}
         >
           PeakPath<span className="text-orange-500">.</span>

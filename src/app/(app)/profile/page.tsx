@@ -33,12 +33,7 @@ export default async function ProfilePage() {
     <div className="min-h-screen px-6 py-10">
       <div className="mx-auto max-w-2xl space-y-6">
         
-        {/* ── Top Navigation / Quick Links ── */}
-        <div className="glass-card mb-8 flex justify-center gap-6 p-4 text-sm font-semibold sm:justify-start">
-          <Link href="/dashboard" className="text-zinc-400 transition-colors hover:text-white">Dashboard</Link>
-          <Link href="/explore" className="text-zinc-400 transition-colors hover:text-white">Explore</Link>
-          <Link href="/profile" className="text-orange-400 border-b-2 border-orange-500 pb-1">Profile</Link>
-        </div>
+
         
         <div className="glass-card overflow-hidden p-8" style={{ background: 'var(--color-bg)' }}>
           <h1 className="text-3xl font-extrabold text-white leading-tight">

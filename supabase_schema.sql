@@ -7,6 +7,8 @@ create table profiles (
   country text,
   funding_preference text,
   onboarding_complete boolean default false,
+  notification_day integer default 1, -- 0=Sun, 1=Mon, etc.
+  notification_hour integer default 9, -- UTC military hour 0-23
   created_at timestamptz default now()
 );
 
@@ -50,3 +52,7 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- Migration to add columns if table already exists:
+-- alter table profiles add column notification_day integer default 1;
+-- alter table profiles add column notification_hour integer default 9;

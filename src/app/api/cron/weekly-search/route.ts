@@ -20,19 +20,17 @@ export async function GET(request: Request) {
     // Current UTC time checking
     const now = new Date()
     const currentDay = now.getUTCDay() // 0-6 (Sun-Sat)
-    const currentHour = now.getUTCHours() // 0-23
 
-    console.log(`Cron triggered: Day ${currentDay}, Hour ${currentHour} UTC`)
+    console.log(`Cron triggered: Day ${currentDay} UTC`)
 
     // We fetch all users who:
     // 1. Have completed onboarding
-    // 2. Scheduled to be notified matching exactly this UTC day and hour
+    // 2. Scheduled to be notified on this exactly this UTC day
     const { data: profiles, error: profileErr } = await supabase
       .from('profiles')
       .select('*')
       .eq('onboarding_complete', true)
       .eq('notification_day', currentDay)
-      .eq('notification_hour', currentHour)
 
     if (profileErr) throw profileErr
     if (!profiles || profiles.length === 0) {

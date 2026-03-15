@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+// Design tokens from indie-starter.dev:
+// bg: #0b0e1a | primary: orange-500 | card: bg-white/3 border-white/8 | grid overlay
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 type DegreeLevel = 'undergraduate' | 'masters' | 'phd' | 'postdoc'
 type FundingPreference = 'fully_funded' | 'partial' | 'any'
@@ -51,14 +54,14 @@ function ProgressBar({ step }: { step: number }) {
   const pct = Math.round(((step - 1) / (TOTAL_STEPS - 1)) * 100)
   return (
     <div className="mb-10">
-      <div className="mb-2 flex items-center justify-between text-xs text-zinc-500">
+      <div className="mb-2 flex items-center justify-between text-xs" style={{ color: 'var(--color-muted)' }}>
         <span>Step {step} of {TOTAL_STEPS}</span>
         <span>{pct}% complete</span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-white/10">
+      <div className="h-1 w-full rounded-full" style={{ background: 'var(--color-border)' }}>
         <div
-          className="h-1.5 rounded-full bg-violet-500 transition-all duration-500"
-          style={{ width: `${pct}%` }}
+          className="h-1 rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, background: 'var(--color-primary)' }}
         />
       </div>
     </div>
@@ -68,8 +71,8 @@ function ProgressBar({ step }: { step: number }) {
 function StepHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-8">
-      <h2 className="text-2xl font-bold text-white">{title}</h2>
-      {subtitle && <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>}
+      <h2 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>{title}</h2>
+      {subtitle && <p className="mt-1 text-xs" style={{ color: 'var(--color-muted)' }}>{subtitle}</p>}
     </div>
   )
 }
@@ -89,7 +92,10 @@ function NavButtons({
       {step > 1 ? (
         <button
           onClick={onBack}
-          className="rounded-xl border border-white/10 px-5 py-2.5 text-sm font-medium text-zinc-300 transition hover:border-white/30 hover:text-white"
+          className="rounded-md border px-5 py-2.5 text-sm font-medium transition"
+          style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-muted)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-muted)')}
         >
           ← Back
         </button>
@@ -100,7 +106,8 @@ function NavButtons({
         <button
           onClick={onNext}
           disabled={!canNext}
-          className="rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="rounded-md px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ background: 'var(--color-primary)' }}
         >
           Continue →
         </button>
@@ -108,7 +115,8 @@ function NavButtons({
         <button
           onClick={onFinish}
           disabled={loading}
-          className="rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="rounded-md px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ background: 'var(--color-primary)' }}
         >
           {loading ? 'Saving…' : 'Finish Setup ✓'}
         </button>
@@ -197,18 +205,26 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-black px-4 py-12">
-      <div className="w-full max-w-lg">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-hidden"
+      style={{ background: 'var(--color-bg)' }}>
+
+      {/* Grid overlay */}
+      <div className="page-grid pointer-events-none absolute inset-0 z-0" />
+
+      {/* Glow */}
+      <div className="glow-blob" />
+
+      <div className="relative z-10 w-full max-w-lg">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <span className="text-xl font-bold text-white">
-            Peak<span className="text-violet-400">Path</span> AI
+          <span className="inline-block rounded border border-orange-500/60 px-2 py-1 text-xs font-bold uppercase tracking-widest text-orange-400">
+            Peak<span className="text-white">Path</span>
           </span>
-          <p className="mt-1 text-xs text-zinc-500">Let's personalise your experience</p>
+          <p className="mt-2 text-xs" style={{ color: 'var(--color-muted)' }}>Let's personalise your experience</p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm">
+        <div className="glass-card p-8">
           <ProgressBar step={step} />
 
           {/* ── Step 1: Name ── */}
@@ -222,7 +238,8 @@ export default function OnboardingPage() {
                 value={form.full_name}
                 onChange={(e) => set('full_name', e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                className="w-full rounded-md px-4 py-3 text-sm outline-none transition"
+                style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
               />
             </>
           )}
@@ -236,14 +253,14 @@ export default function OnboardingPage() {
                   <button
                     key={opt.value}
                     onClick={() => set('degree_level', opt.value)}
-                    className={`rounded-xl border p-4 text-left transition hover:border-violet-500 ${
-                      form.degree_level === opt.value
-                        ? 'border-violet-500 bg-violet-500/10'
-                        : 'border-white/10 bg-white/5'
-                    }`}
+                    className="rounded-md p-4 text-left transition hover:scale-[1.02]"
+                    style={{
+                      border: `1px solid ${ form.degree_level === opt.value ? 'var(--color-primary)' : 'var(--color-border)' }`,
+                      background: form.degree_level === opt.value ? 'var(--color-primary-muted)' : 'var(--color-surface-hover)',
+                    }}
                   >
-                    <p className="text-sm font-semibold text-white">{opt.label}</p>
-                    <p className="mt-0.5 text-xs text-zinc-400">{opt.desc}</p>
+                    <p className="text-sm font-semibold" style={{ color: form.degree_level === opt.value ? 'var(--color-primary)' : 'var(--color-text)' }}>{opt.label}</p>
+                    <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted)' }}>{opt.desc}</p>
                   </button>
                 ))}
               </div>
@@ -275,10 +292,11 @@ export default function OnboardingPage() {
                     )
                   }
                   onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                  className="w-full rounded-md px-4 py-3 text-sm outline-none transition"
+                  style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                 />
                 {fieldSuggestions.length > 0 && (
-                  <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-xl">
+                  <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-md shadow-xl" style={{ background: '#13172a', border: '1px solid var(--color-border)' }}>
                     {fieldSuggestions.map((s) => (
                       <li
                         key={s}
@@ -286,7 +304,10 @@ export default function OnboardingPage() {
                           set('field_of_study', s)
                           setFieldSuggestions([])
                         }}
-                        className="cursor-pointer px-4 py-2.5 text-sm text-zinc-300 hover:bg-violet-500/10 hover:text-white transition"
+                        className="cursor-pointer px-4 py-2.5 text-sm transition"
+                        style={{ color: 'var(--color-muted)' }}
+                        onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-text)'; e.currentTarget.style.background = 'var(--color-primary-muted)' }}
+                        onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-muted)'; e.currentTarget.style.background = 'transparent' }}
                       >
                         {s}
                       </li>
@@ -322,10 +343,11 @@ export default function OnboardingPage() {
                     )
                   }
                   onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                  className="w-full rounded-md px-4 py-3 text-sm outline-none transition"
+                  style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                 />
                 {countrySuggestions.length > 0 && (
-                  <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-xl">
+                  <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-md shadow-xl" style={{ background: '#13172a', border: '1px solid var(--color-border)' }}>
                     {countrySuggestions.map((c) => (
                       <li
                         key={c}
@@ -333,7 +355,10 @@ export default function OnboardingPage() {
                           set('country', c)
                           setCountrySuggestions([])
                         }}
-                        className="cursor-pointer px-4 py-2.5 text-sm text-zinc-300 hover:bg-violet-500/10 hover:text-white transition"
+                        className="cursor-pointer px-4 py-2.5 text-sm transition"
+                        style={{ color: 'var(--color-muted)' }}
+                        onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-text)'; e.currentTarget.style.background = 'var(--color-primary-muted)' }}
+                        onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-muted)'; e.currentTarget.style.background = 'transparent' }}
                       >
                         {c}
                       </li>
@@ -353,14 +378,14 @@ export default function OnboardingPage() {
                   <button
                     key={opt.value}
                     onClick={() => set('funding_preference', opt.value)}
-                    className={`rounded-xl border p-4 text-left transition hover:border-violet-500 ${
-                      form.funding_preference === opt.value
-                        ? 'border-violet-500 bg-violet-500/10'
-                        : 'border-white/10 bg-white/5'
-                    }`}
+                    className="rounded-md p-4 text-left transition hover:scale-[1.01]"
+                    style={{
+                      border: `1px solid ${ form.funding_preference === opt.value ? 'var(--color-primary)' : 'var(--color-border)' }`,
+                      background: form.funding_preference === opt.value ? 'var(--color-primary-muted)' : 'var(--color-surface-hover)',
+                    }}
                   >
-                    <p className="text-sm font-semibold text-white">{opt.label}</p>
-                    <p className="mt-0.5 text-xs text-zinc-400">{opt.desc}</p>
+                    <p className="text-sm font-semibold" style={{ color: form.funding_preference === opt.value ? 'var(--color-primary)' : 'var(--color-text)' }}>{opt.label}</p>
+                    <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted)' }}>{opt.desc}</p>
                   </button>
                 ))}
               </div>
@@ -405,7 +430,7 @@ export default function OnboardingPage() {
                 ))}
               </div>
               {error && (
-                <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                <div className="mt-4 rounded-md px-4 py-3 text-xs" style={{ border: '1px solid var(--color-error-border)', background: 'var(--color-error-bg)', color: 'var(--color-error)' }}>
                   {error}
                 </div>
               )}

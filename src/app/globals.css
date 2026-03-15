@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
+/* ============================================================
+   PeakPath AI — Global Design Tokens
+   Design language sourced from indie-starter.dev
+   ============================================================ */
+
+/* ── Color Tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --color-bg:          #0b0e1a;   /* Deep navy — main page bg */
+  --color-surface:     rgba(255,255,255,0.03); /* Glass card bg */
+  --color-surface-hover: rgba(255,255,255,0.06);
+
+  /* Borders */
+  --color-border:      rgba(255,255,255,0.08); /* Subtle card borders */
+  --color-border-strong: rgba(255,255,255,0.15);
+
+  /* Brand / Primary */
+  --color-primary:     #f97316;   /* orange-500 — CTA, highlights */
+  --color-primary-hover: #fb923c; /* orange-400 */
+  --color-primary-muted: rgba(249,115,22,0.15); /* tinted bg for badges */
+
+  /* Text */
+  --color-text:        #f4f4f5;   /* zinc-100 — primary text */
+  --color-muted:       #71717a;   /* zinc-500 — secondary / labels */
+  --color-subtle:      #3f3f46;   /* zinc-700 — very dim text */
+
+  /* Semantic */
+  --color-error:       #f87171;   /* red-400 */
+  --color-error-bg:    rgba(248,113,113,0.1);
+  --color-error-border: rgba(248,113,113,0.2);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Typography ── */
+:root {
+  --font-sans:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif:  'Georgia', 'Times New Roman', serif; /* Hero headings */
+  --font-mono:   'JetBrains Mono', 'Fira Code', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Spacing / Radius ── */
+:root {
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-full: 9999px;
+}
+
+/* ── Tailwind CSS var bridge ── */
+/* Note: @theme is Tailwind v4 only — using standard CSS custom properties instead */
+
+/* ── Base Styles ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Utility: Page Grid Overlay ──
+   Apply class="page-grid" to any page wrapper for the dotted grid background */
+.page-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Utility: Glass Card ── */
+.glass-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-xl);
+}
+
+/* ── Utility: Orange Glow Blob ── */
+.glow-blob {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(249,115,22,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-subtle); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+
+/* ── Selection highlight ── */
+::selection {
+  background: rgba(249,115,22,0.25);
+  color: #fff;
+}
+
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

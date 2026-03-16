@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
   const protectedRoutes = ['/dashboard', '/onboarding', '/profile', '/opportunities']
   const isProtected = protectedRoutes.some((r) => url.pathname.startsWith(r))
-  const isAuthPage = url.pathname === '/login' || url.pathname === '/signup'
+  const isAuthPage = url.pathname === '/login' || url.pathname === '/signup' || url.pathname === '/'
 
   // Not logged in → send to login
   if (!user && isProtected) {

@@ -18,20 +18,12 @@ export async function GET(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Current UTC time checking
-    const now = new Date()
-    const currentDay = now.getUTCDay() // 0-6 (Sun-Sat)
-
-    console.log(`Cron triggered: Day ${currentDay} UTC`)
-
     // We fetch all users who:
     // 1. Have completed onboarding
-    // 2. Scheduled to be notified on this exactly this UTC day
     const { data: profiles, error: profileErr } = await supabase
       .from('profiles')
       .select('*')
       .eq('onboarding_complete', true)
-      .eq('notification_day', currentDay)
 
     if (profileErr) throw profileErr
     if (!profiles || profiles.length === 0) {
@@ -41,6 +33,7 @@ export async function GET(request: Request) {
     console.log(`Found ${profiles.length} users to process for timeslot`)
 
     // Week start calculation
+    const now = new Date()
     const weekStartIso = getWeekStart(now)
 
     const processedUsers = []

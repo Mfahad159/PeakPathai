@@ -1,27 +1,43 @@
-import FloatingDock from '@/components/layout/FloatingDock'
-import UserProfileButton from '@/components/layout/UserProfileButton'
-import TopLeftLogo from '@/components/layout/TopLeftLogo'
+import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+      },
+    }
+  )
+
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  let profileName = undefined
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single()
+    profileName = profile?.full_name
+  }
+
   return (
-    <div className="relative min-h-screen flex flex-col">
-      {/* Page content — pad top/bottom responsively so navigation doesn't overlap content */}
-      <main className="relative z-10 pb-28 pt-20 md:pb-10 md:pt-28 flex-1">
+    <div className="relative min-h-screen flex flex-col pt-16">
+      <Navbar user={user} profileName={profileName} />
+      
+      {/* Page content */}
+      <main className="relative z-10 flex-1">
         {children}
       </main>
 
       {/* Global Embedded Footer */}
       <Footer />
-
-      {/* Floating dock — only shown on authenticated app pages */}
-      <FloatingDock />
-
-      {/* Top right floating profile / signout */}
-      <UserProfileButton />
-
-      {/* Top left logo */}
-      <TopLeftLogo />
     </div>
   )
 }

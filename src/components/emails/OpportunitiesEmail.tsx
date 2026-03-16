@@ -63,11 +63,9 @@ export const OpportunitiesEmail = ({
 
                 <Text style={cardDesc}>{opp.description}</Text>
 
-                {opp.source_url && (
-                  <Link href={opp.source_url} style={button}>
-                    View Details
-                  </Link>
-                )}
+                <Link href={`${process.env.NEXT_PUBLIC_SITE_URL}/opportunities/${opp.id}`} style={button}>
+                  View Details
+                </Link>
                 {idx < opportunities.length - 1 && <Hr style={hr} />}
               </Section>
             ))}

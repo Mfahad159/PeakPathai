@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import OpportunityCard from '@/components/opportunity/OpportunityCard'
 import { getWeekStart } from '@/lib/date'
+import { AlertCircle } from 'lucide-react'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -21,27 +22,61 @@ interface QuotaInfo {
   searches_remaining: number
 }
 
-// ── Quota Bar ─────────────────────────────────────────────────────────────────
+function getNextMonday() {
+  const d = new Date()
+  d.setDate(d.getDate() + (1 + 7 - d.getDay()) % 7 || 7)
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
+
+function SkeletonCard() {
+  return (
+    <div className="glass-card animate-pulse p-6">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1 space-y-3">
+          <div className="h-5 w-3/4 bg-white/10 rounded"></div>
+          <div className="h-4 w-1/2 bg-white/5 rounded"></div>
+        </div>
+        <div className="h-8 w-8 bg-white/10 rounded-full ml-4"></div>
+      </div>
+      <div className="flex gap-2 mb-4">
+        <div className="h-6 w-24 bg-orange-500/10 rounded-full"></div>
+        <div className="h-6 w-32 bg-white/5 rounded-full"></div>
+      </div>
+      <div className="space-y-2 mb-6">
+        <div className="h-4 w-full bg-white/5 rounded"></div>
+        <div className="h-4 w-full bg-white/5 rounded"></div>
+        <div className="h-4 w-4/5 bg-white/5 rounded"></div>
+      </div>
+      <div className="h-4 w-24 bg-orange-500/20 rounded"></div>
+    </div>
+  )
+}
+
 function QuotaBar({ quota }: { quota: QuotaInfo | null }) {
   if (!quota) return null
   const pct = (quota.searches_used / 5) * 100
+  const resetDate = getNextMonday()
+  const isExhausted = quota.searches_remaining <= 0
+
   return (
-    <div className="glass-card px-4 py-3 flex items-center gap-4">
+    <div className="glass-card px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
       <div className="flex-1">
-        <div className="mb-1 flex justify-between text-xs" style={{ color: 'var(--color-muted)' }}>
-          <span>Weekly searches</span>
-          <span>{quota.searches_used} / 5 used</span>
+        <div className="mb-2 flex items-center justify-between text-sm">
+          <span className="font-medium text-white">Search Quota</span>
+          <span className="font-semibold" style={{ color: isExhausted ? '#f87171' : 'var(--color-primary)' }}>
+            {quota.searches_used} of 5 used this week
+          </span>
         </div>
-        <div className="h-1 w-full rounded-full" style={{ background: 'var(--color-border)' }}>
+        <div className="h-2 w-full rounded-full overflow-hidden" style={{ background: 'var(--color-border)' }}>
           <div
-            className="h-1 rounded-full transition-all"
-            style={{ width: `${pct}%`, background: pct >= 100 ? '#f87171' : 'var(--color-primary)' }}
+            className="h-full rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${pct}%`, background: isExhausted ? '#f87171' : 'var(--color-primary)' }}
           />
         </div>
+        <p className="mt-2 text-xs" style={{ color: 'var(--color-muted)' }}>
+          Quota resets on {resetDate}
+        </p>
       </div>
-      <span className="shrink-0 text-xs font-semibold" style={{ color: quota.searches_remaining > 0 ? 'var(--color-primary)' : '#f87171' }}>
-        {quota.searches_remaining} left
-      </span>
     </div>
   )
 }
@@ -219,14 +254,25 @@ export default function DashboardPage() {
                 We'll query the web in real-time and use AI to match results to your profile.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  onClick={handleSearch}
-                  disabled={(quota?.searches_remaining ?? 1) <= 0}
-                  className="cursor-pointer rounded-xl px-8 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.03] hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: 'var(--color-primary)' }}
-                >
-                  Find Opportunities →
-                </button>
+                <div className="relative group/tooltip">
+                  <button
+                    onClick={handleSearch}
+                    disabled={(quota?.searches_remaining ?? 1) <= 0 || loading}
+                    className="cursor-pointer rounded-xl px-8 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.03] hover:bg-orange-400 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed disabled:hover:bg-orange-500 w-full sm:w-auto"
+                    style={{ background: 'var(--color-primary)' }}
+                  >
+                    Find Opportunities →
+                  </button>
+                  {/* Tooltip */}
+                  {(quota?.searches_remaining ?? 1) <= 0 && (
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none">
+                      <div className="rounded bg-zinc-800 px-3 py-1.5 text-xs text-white shadow-xl">
+                        Quota resets on {getNextMonday()}
+                        <div className="absolute top-full left-1/2 -mt-px -translate-x-1/2 border-4 border-transparent border-t-zinc-800" />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={() => setShowPrefs(true)}
                   className="cursor-pointer rounded-xl border px-6 py-3 text-sm font-medium transition-colors hover:bg-white/5 hover:text-white"
@@ -348,10 +394,14 @@ export default function DashboardPage() {
 
           {/* Loading */}
           {loading && (
-            <div className="flex flex-col items-center gap-3 py-4">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
-              <p className="text-sm font-medium text-white">Searching the web and parsing results…</p>
-              <p className="text-xs" style={{ color: 'var(--color-muted)' }}>This usually takes 10–20 seconds</p>
+            <div className="mt-8 space-y-4 text-center">
+              <p className="text-sm font-medium animate-pulse text-white">Searching the web and parsing results…</p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-left">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
             </div>
           )}
 
@@ -370,16 +420,18 @@ export default function DashboardPage() {
         {/* ── Error State ── */}
         {error && (
           <div
-            className="glass-card flex items-center justify-between p-4"
+            className="glass-card flex flex-col items-center justify-center p-8 mt-6 text-center"
             style={{ borderColor: 'var(--color-error-border)', background: 'var(--color-error-bg)' }}
           >
-            <p className="text-xs" style={{ color: 'var(--color-error)' }}>⚠ {error}</p>
+            <AlertCircle className="h-8 w-8 mb-3" style={{ color: 'var(--color-error)' }} />
+            <h3 className="text-sm font-semibold text-white mb-1">Search Pipeline Failed</h3>
+            <p className="text-xs mb-4 max-w-sm" style={{ color: 'var(--color-error)' }}>Something went wrong while searching. Try again in a moment. ({error})</p>
             <button
               onClick={handleSearch}
-              className="text-xs font-medium hover:underline"
+              className="text-xs font-semibold px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors"
               style={{ color: 'var(--color-error)' }}
             >
-              Retry →
+              Retry Search
             </button>
           </div>
         )}

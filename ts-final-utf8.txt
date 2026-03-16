@@ -1,1 +1,0 @@
-﻿src/app/(app)/dashboard/page.tsx(11,53): error TS2307: Cannot find module 'ai/react' or its corresponding type declarations.

@@ -44,7 +44,7 @@ export default function FloatingDock() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <div className="fixed top-6 left-1/2 z-50 -translate-x-1/2">
+    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:bottom-auto md:top-6">
       <nav
         className="flex items-center gap-1 rounded-2xl border px-3 py-2 shadow-2xl"
         style={{

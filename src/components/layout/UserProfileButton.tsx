@@ -22,7 +22,7 @@ export default function UserProfileButton() {
   if (!avatarUrl) return null
 
   return (
-    <div className="fixed top-6 right-6 z-50">
+    <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
       <div 
         className="flex items-center gap-3 overflow-hidden rounded-full border border-white/10 p-1.5 shadow-lg transition-all duration-300"
         style={{

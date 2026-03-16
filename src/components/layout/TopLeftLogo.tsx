@@ -5,7 +5,7 @@ export default function TopLeftLogo() {
   return (
     <Link 
       href="/dashboard"
-      className="fixed top-6 left-6 z-50 flex items-center gap-2 rounded-full border border-white/10 p-1.5 pr-4 shadow-lg transition-all hover:scale-105"
+      className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-2 rounded-full border border-white/10 p-1.5 pr-3 md:pr-4 shadow-lg transition-all hover:scale-105"
       style={{
         background: 'rgba(11,14,26,0.65)',
         backdropFilter: 'blur(20px)',

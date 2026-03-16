@@ -13,8 +13,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         className="page-grid pointer-events-none fixed inset-0 z-0"
       />
 
-      {/* Page content — pad top so top-navigation doesn't overlap content */}
-      <main className="relative z-10 pt-28 pb-10">
+      {/* Page content — pad top/bottom responsively so navigation doesn't overlap content */}
+      <main className="relative z-10 pb-28 pt-20 md:pb-10 md:pt-28">
         {children}
       </main>
 

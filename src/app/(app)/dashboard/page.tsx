@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import OpportunityCard from '@/components/opportunity/OpportunityCard'
 import { getWeekStart } from '@/lib/date'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Search, Hourglass } from 'lucide-react'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -246,7 +246,9 @@ export default function DashboardPage() {
         >
           {!loading && !quotaError && (
             <>
-              <div className="mb-2 text-2xl">🔍</div>
+              <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-white/5 p-3 transition-colors hover:bg-white/10 text-zinc-400 hover:text-white">
+                <Search size={24} />
+              </div>
               <h2 className="mb-1 text-sm font-semibold text-white">
                 {searched ? 'Search again' : 'Find your opportunities'}
               </h2>
@@ -407,8 +409,10 @@ export default function DashboardPage() {
 
           {/* Quota error */}
           {quotaError && (
-            <div className="flex flex-col items-center gap-2 py-2">
-              <div className="text-2xl">⏳</div>
+            <div className="flex flex-col items-center gap-3 py-4">
+              <div className="inline-flex items-center justify-center rounded-lg bg-orange-500/10 p-3 transition-colors hover:bg-orange-500/20 text-orange-400">
+                <Hourglass size={24} />
+              </div>
               <p className="text-sm font-semibold text-white">Weekly limit reached</p>
               <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
                 You've used all 5 searches this week. Resets in {daysUntilReset} day{daysUntilReset !== 1 ? 's' : ''}.

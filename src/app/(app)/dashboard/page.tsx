@@ -8,6 +8,8 @@ import { motion } from 'framer-motion'
 import OpportunityCard from '@/components/opportunity/OpportunityCard'
 import { getWeekStart } from '@/lib/date'
 import { AlertCircle, Search, Hourglass, Edit2, X, Info } from 'lucide-react'
+import { experimental_useObject as useObject } from '@ai-sdk/react'
+import { z } from 'zod'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -156,46 +158,88 @@ export default function DashboardPage() {
 
   useEffect(() => { loadInitialData() }, [loadInitialData])
 
+  // Note: we can't use useObject simply because we need to parse standard JSON response from our route since it wraps the stream inside a standard nextResponse? Wait no, the route currently returns a direct `toTextStreamResponse()`. Wait, the route also does quota checks. Let's revert the dashboard to standard fetch and parse the text stream manually, or use Vercel's useObject pointing directly at our API.
+  
+  const { object, submit, isLoading: aiLoading, stop } = useObject({
+    api: '/api/search',
+    schema: z.object({
+      opportunities: z.array(z.object({
+        title: z.string(),
+        provider: z.string(),
+        deadline: z.string(),
+        funding_type: z.string(),
+        location: z.string(),
+        field: z.string(),
+        description: z.string(),
+        source_url: z.string()
+      }))
+    }),
+    onFinish: (result: any) => {
+      setLoading(false)
+      if (result.object?.opportunities) {
+        // Hydrate default fields missing from pure AI stream
+        const fullyHydrated = result.object.opportunities.map((opp: any, idx: number) => ({
+          ...opp,
+          id: `temp_${Date.now()}_${idx}`, 
+          user_id: profile?.id ?? '',
+          raw_data: null,
+          saved: false,
+          seen: false,
+          notify_updates: true
+        })) as Opportunity[]
+        
+        setOpportunities(fullyHydrated)
+        setShowBookmarkToast(true)
+        setSearched(true)
+      }
+    },
+    onError: (e: any) => {
+      setLoading(false)
+      const errStr = e.message.toLowerCase()
+      if (errStr.includes('429') || errStr.includes('quota')) {
+         setQuotaError(true)
+      } else {
+         setError(e.message)
+      }
+    }
+  })
+
+  // Hook up streamed array to local UI array while generating
+  useEffect(() => {
+    if (object?.opportunities && aiLoading) {
+       const partials = object.opportunities.map((opp: any, idx: number) => ({
+          ...opp,
+          title: opp.title ?? 'Loading...',
+          provider: opp.provider ?? '...',
+          description: opp.description ?? '...',
+          id: `partial_${idx}`,
+          user_id: 'temp',
+          saved: false,
+          seen: false,
+          notify_updates: true,
+          funding_type: opp.funding_type ?? 'Unknown',
+          location: opp.location ?? 'Unknown',
+          field: opp.field ?? 'General',
+          deadline: opp.deadline ?? 'Not specified',
+          source_url: opp.source_url ?? ''
+       })) as Opportunity[]
+       setOpportunities(partials)
+       setSearched(true)
+    }
+  }, [object, aiLoading])
+
   const handleSearch = async () => {
     setLoading(true)
     setError(null)
     setQuotaError(false)
-
-    try {
-      const res = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          target_countries: targetCountries,
-          funding_preference: fundingPref,
-        })
-      })
-      const data = await res.json()
-
-      if (res.status === 429) {
-        setQuotaError(true)
-        setLoading(false)
-        return
-      }
-
-      if (data.status === 'no_new_results') {
-        setSearchStatusMsg(data.message)
-        // Ensure toast doesn't show for empty results
-        setOpportunities([])
-      } else {
-        setSearchStatusMsg(null)
-        setOpportunities(data.opportunities ?? [])
-        setShowBookmarkToast(true) // Trigger toast on fresh success
-        setVisibleCount(10)
-      }
-      
-      setQuota({ searches_used: data.searches_used, searches_remaining: data.searches_remaining })
-      setSearched(true)
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    setSearchStatusMsg(null)
+    setOpportunities([])
+    
+    // Check quota up front natively before streaming if we want, or just let AI catch API 429
+    submit({
+       target_countries: targetCountries,
+       funding_preference: fundingPref
+    })
   }
 
   // Toast Auto-dismiss

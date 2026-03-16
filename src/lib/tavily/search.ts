@@ -37,7 +37,7 @@ async function tavilySearch(query: string): Promise<TavilyResult[]> {
       api_key: process.env.TAVILY_API_KEY,
       query,
       search_depth: 'advanced',
-      max_results: 10,
+      max_results: 8,
       include_answer: false,
       include_raw_content: false,
     }),
@@ -67,11 +67,13 @@ export async function searchOpportunities(profile: Profile): Promise<TavilyResul
     }
   }
 
-  // Deduplicate by URL
+  // Deduplicate by URL and limit total results to 15 (safely under 20)
   const seen = new Set<string>()
-  return combined.filter(r => {
+  const unique = combined.filter(r => {
     if (seen.has(r.url)) return false
     seen.add(r.url)
     return true
   })
+  
+  return unique.slice(0, 15)
 }

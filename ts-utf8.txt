@@ -1,0 +1,7 @@
+﻿src/app/(app)/dashboard/page.tsx(11,53): error TS2307: Cannot find module 'ai/react' or its corresponding type declarations.
+src/app/(app)/dashboard/page.tsx(177,16): error TS7006: Parameter 'result' implicitly has an 'any' type.
+src/app/(app)/dashboard/page.tsx(181,64): error TS7006: Parameter 'opp' implicitly has an 'any' type.
+src/app/(app)/dashboard/page.tsx(181,69): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/app/(app)/dashboard/page.tsx(196,15): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/app/(app)/dashboard/page.tsx(210,51): error TS7006: Parameter 'opp' implicitly has an 'any' type.
+src/app/(app)/dashboard/page.tsx(210,56): error TS7006: Parameter 'idx' implicitly has an 'any' type.

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { searchOpportunities } from '@/lib/tavily/search'
-import { parseOpportunities } from '@/lib/openrouter/parse'
+import { parseOpportunitiesBatch } from '@/lib/openrouter/parse'
 import { sendOpportunityDigest } from '@/lib/email/sendOpportunityDigest'
 import { getWeekStart } from '@/lib/date'
 
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
         // 2. Run the full search pipeline natively
         console.log(`Running pipeline for ${userEmail} with profile ${profile.id}`)
         const searchCtx = await searchOpportunities(profile as any)
-        const opportunities = await parseOpportunities(searchCtx)
+        const opportunities = await parseOpportunitiesBatch(searchCtx)
 
         if (opportunities.length === 0) {
           console.log(`No opportunities found for ${userEmail}`)

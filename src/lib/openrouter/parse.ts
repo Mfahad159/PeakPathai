@@ -1,5 +1,6 @@
 import { Opportunity } from '@/types'
 import { TavilyResult } from '@/lib/tavily/search'
+import { stringifyToonArray, parseToonArray } from '@/lib/toon'
 
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions'
 
@@ -13,18 +14,22 @@ const FALLBACK_MODELS = [
 
 const SYSTEM_PROMPT = `You are a structured data extraction assistant.
 Your ONLY job is to extract scholarship and research opportunity data from raw web search results.
-You MUST return ONLY a valid JSON array — no markdown fences, no explanation, no preamble.
-Each object in the array must have these exact fields:
-{
-  "title": "string — name of the scholarship or program",
-  "provider": "string — organisation or institution offering it",
-  "deadline": "string — application deadline date or 'Rolling' or 'Not specified'",
-  "funding_type": "string — one of: Fully Funded, Partial Funding, Stipend Only, Unknown",
-  "location": "string — country or region",
-  "field": "string — field/discipline this is for",
-  "description": "string — 2 to 3 sentences about the opportunity",
-  "source_url": "string — the original URL of the result"
-}
+You MUST return ONLY a valid TOON format table (Token-Oriented Object Notation) — no markdown fences, no explanation, no preamble.
+TOON format uses a single comma-separated header row, followed by rows of comma-separated values.
+Do NOT use JSON.
+Each row must strictly represent an object with these exact header fields:
+title,provider,deadline,funding_type,location,field,description,source_url
+
+Rules for values:
+- "title": name of the scholarship or program
+- "provider": organisation or institution offering it
+- "deadline": application deadline date or 'Rolling' or 'Not specified'
+- "funding_type": one of: Fully Funded, Partial Funding, Stipend Only, Unknown
+- "location": country or region
+- "field": field/discipline this is for
+- "description": 2 to 3 sentences about the opportunity
+- "source_url": the original URL of the result
+- Escape values containing commas by wrapping them in double quotes (e.g. "Value, with comma")
 If a field cannot be determined, use "Not specified".
 Do not include duplicates. Do not include results that are clearly not scholarships or research programs.`
 
@@ -44,9 +49,9 @@ export async function parseOpportunities(
 ): Promise<Omit<Opportunity, 'id' | 'user_id' | 'saved' | 'seen' | 'created_at' | 'raw_data'>[]> {
   if (rawResults.length === 0) return []
 
-  const userContent = `Here are raw web search results. Extract all scholarship and research opportunities you find:\n\n${rawResults
-    .map((r, i) => `[Result ${i + 1}]\nTitle: ${r.title}\nURL: ${r.url}\nContent: ${r.content}`)
-    .join('\n\n---\n\n')}`
+  const userContentHeader = 'Here are raw web search results. Extract all scholarship and research opportunities you find. Return the data ONLY as a valid TOON format table:\n\n'
+  const userContentData = stringifyToonArray(rawResults)
+  const userContent = userContentHeader + userContentData
 
   const res = await fetch(OPENROUTER_API, {
     method: 'POST',
@@ -86,17 +91,13 @@ export async function parseOpportunities(
     .trim()
 
   try {
-    // Attempt standard parse first
-    let parsed: any = JSON.parse(cleaned)
+    // Parse TOON format
+    let parsed = parseToonArray(cleaned)
     
-    // Sometimes the model wraps the array in an object like { "opportunities": [...] }
+    // Ensure it's an array
     if (!Array.isArray(parsed)) {
-      if (parsed.opportunities && Array.isArray(parsed.opportunities)) {
-        parsed = parsed.opportunities
-      } else {
-         console.error('DeepSeek returned an object but no opportunities array:', parsed)
-         return []
-      }
+      console.error('Parsed result was not an array:', parsed)
+      return []
     }
 
     return parsed.map((item: any) => ({
@@ -110,7 +111,7 @@ export async function parseOpportunities(
       source_url: item.source_url ?? '',
     }))
   } catch (err) {
-    console.error('Model returned malformed JSON or plain text:', rawText)
+    console.error('Model returned malformed TOON or plain text:', rawText)
     console.error('Parse error:', err)
     return []
   }

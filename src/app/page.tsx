@@ -4,7 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import Footer from '@/components/layout/Footer'
 
 // ── Floating Glass Header ──────────────────────────────────────────────────────
 function Header() {
@@ -79,23 +80,28 @@ function Header() {
         </nav>
 
         {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div 
-            className="absolute top-full left-0 right-0 mt-2 flex flex-col gap-4 rounded-2xl border p-5 text-center md:hidden"
-            style={{
-              background: 'rgba(11,14,26,0.95)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderColor: 'rgba(255,255,255,0.08)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-            }}
-          >
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">Features</a>
-            <a href="#how" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">How it works</a>
-            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">Reviews</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">FAQ</a>
-            
-            <div className="my-2 h-px w-full bg-white/10" />
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15, transition: { duration: 0.2 } }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="absolute top-full left-0 right-0 mt-2 flex flex-col gap-4 rounded-2xl border p-5 text-center md:hidden"
+              style={{
+                background: 'rgba(11,14,26,0.95)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderColor: 'rgba(255,255,255,0.08)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+              }}
+            >
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">Features</a>
+              <a href="#how" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">How it works</a>
+              <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">Reviews</a>
+              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">FAQ</a>
+              
+              <div className="my-2 h-px w-full bg-white/10" />
             
             <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">
               Sign in
@@ -107,8 +113,9 @@ function Header() {
             >
               Get started — it's free
             </Link>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
     </header>
   )
@@ -465,22 +472,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── 8. FOOTER ───────────────────────────────────────────────────── */}
-      <footer className="relative z-10 border-t px-8 py-8" style={{ borderColor: 'var(--color-border)' }}>
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <span className="rounded border border-orange-500/40 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-orange-400">
-            Peak<span className="text-white">Path</span>
-          </span>
-          <div className="flex gap-6 text-xs" style={{ color: 'var(--color-muted)' }}>
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#how" className="hover:text-white transition-colors">How it works</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-            <Link href="/login" className="hover:text-white transition-colors">Sign in</Link>
-          </div>
-          <span className="text-xs" style={{ color: 'var(--color-subtle)' }}>
-            © {new Date().getFullYear()} PeakPath AI · Built for ambitious scholars
-          </span>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

@@ -47,7 +47,7 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
   }
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/5" style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg)' }}>
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/5" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
       {/* ── Top row: Provider + Save ── */}
       <div className="mb-3 flex items-start justify-between gap-4">
         <div className="flex-1">

@@ -247,7 +247,7 @@ export default function DashboardPage() {
               {/* Preferences Modal */}
               {showPrefs && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0e1a]/80 p-4 backdrop-blur-md animate-in fade-in duration-200">
-                  <div className="glass-card w-full max-w-sm text-left shadow-2xl" style={{ background: 'var(--color-bg)' }}>
+                  <div className="glass-card w-full max-w-sm text-left shadow-2xl" style={{ background: 'var(--color-surface)' }}>
                     <div className="p-6">
                       <h3 className="mb-5 text-lg font-bold text-white">Edit Search Preferences</h3>
                       

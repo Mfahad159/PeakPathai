@@ -67,7 +67,7 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
         </Link>
         
         {/* ── Header Card ── */}
-        <div className="glass-card overflow-hidden p-8" style={{ background: 'var(--color-bg)' }}>
+        <div className="glass-card overflow-hidden p-8" style={{ background: 'var(--color-surface)' }}>
           <p className="text-sm font-semibold tracking-wide" style={{ color: 'var(--color-primary)' }}>
             {opp.provider}
           </p>

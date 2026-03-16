@@ -67,7 +67,6 @@ button, a, label, summary, .glass-card, [role="button"], input[type="submit"], i
 }
 
 body {
-  background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: 14px;

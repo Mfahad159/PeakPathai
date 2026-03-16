@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Bot, Target, BellRing, ClipboardCheck, Globe2, Zap, ArrowRight, Star, CheckCircle2, Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Footer from '@/components/layout/Footer'
 
@@ -138,13 +138,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   return (
-    <div
-      className="relative min-h-screen overflow-x-hidden text-white"
-      style={{ background: 'var(--color-bg)' }}
-    >
-      {/* Global grid overlay */}
-      <div className="page-grid pointer-events-none fixed inset-0 z-0" />
-
+    <div className="relative min-h-screen overflow-x-hidden text-white">
       <Header />
 
         {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
@@ -171,7 +165,7 @@ export default function LandingPage() {
           className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl"
           style={{ fontFamily: 'Georgia, serif' }}
         >
-          Find the scholarships<br />
+          Find the Opportunities<br />
           <span className="text-orange-400">you actually deserve</span>
         </motion.h1>
 
@@ -227,7 +221,7 @@ export default function LandingPage() {
       <motion.section 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-50px' }}
+        viewport={{ once: true, amount: 0.1 }}
         transition={{ duration: 0.6 }}
         className="relative z-10 border-y px-8 py-12" 
         style={{ borderColor: 'var(--color-border)' }}
@@ -246,7 +240,7 @@ export default function LandingPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.5 }}
             className="mb-14 text-center"
           >
@@ -257,32 +251,32 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {[
               {
-                icon: '🔍',
+                icon: <Bot className="w-6 h-6 text-orange-400" />,
                 title: 'AI-Powered Search',
                 desc: 'DeepSeek + Tavily scans the web in real-time and returns scholarships matched specifically to your profile — not generic lists.',
               },
               {
-                icon: '🎯',
+                icon: <Target className="w-6 h-6 text-orange-400" />,
                 title: 'Precision Matching',
                 desc: 'Filter by degree level, field of study, country of origin, and funding type. We surface what matters to you.',
               },
               {
-                icon: '⏰',
+                icon: <BellRing className="w-6 h-6 text-orange-400" />,
                 title: 'Deadline Alerts',
                 desc: 'Set reminders for any opportunity. We send email alerts before deadlines so you never miss an application window.',
               },
               {
-                icon: '📋',
+                icon: <ClipboardCheck className="w-6 h-6 text-orange-400" />,
                 title: 'Application Tracking',
                 desc: 'Save opportunities, mark them as applied, and track your progress all in one place.',
               },
               {
-                icon: '🌍',
+                icon: <Globe2 className="w-6 h-6 text-orange-400" />,
                 title: 'Global Coverage',
                 desc: 'Scholarships from the US, UK, EU, Asia, and beyond — for all degree levels including Masters, PhD, and Postdoc.',
               },
               {
-                icon: '⚡',
+                icon: <Zap className="w-6 h-6 text-orange-400" />,
                 title: 'Instant Results',
                 desc: 'No waiting. Search runs in seconds and results are structured, readable, and ranked by relevance.',
               },
@@ -291,11 +285,13 @@ export default function LandingPage() {
                 key={f.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="glass-card group p-6 transition-all hover:border-orange-500/30"
               >
-                <div className="mb-3 text-2xl">{f.icon}</div>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10 border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                  {f.icon}
+                </div>
                 <h3 className="mb-1.5 text-sm font-semibold text-orange-400">{f.title}</h3>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>{f.desc}</p>
               </motion.div>
@@ -310,7 +306,7 @@ export default function LandingPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.5 }}
             className="mb-14 text-center"
           >
@@ -327,7 +323,7 @@ export default function LandingPage() {
                 key={s.step}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.5, delay: i * 0.15 }}
                 className="flex items-start gap-6 rounded-xl border p-6 transition-all hover:border-orange-500/20"
                 style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
@@ -354,7 +350,7 @@ export default function LandingPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.5 }}
             className="mb-14 text-center"
           >
@@ -386,7 +382,7 @@ export default function LandingPage() {
                 key={t.name}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: '-50px' }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="glass-card flex flex-col justify-between p-6"
               >
@@ -410,7 +406,7 @@ export default function LandingPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.5 }}
             className="mb-14 text-center"
           >
@@ -429,7 +425,7 @@ export default function LandingPage() {
                 key={faq.q}
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="group glass-card overflow-hidden"
               >
@@ -455,7 +451,7 @@ export default function LandingPage() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: '-50px' }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.6 }}
           className="relative mx-auto max-w-xl"
         >

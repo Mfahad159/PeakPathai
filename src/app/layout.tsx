@@ -29,8 +29,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
       >
+        {/* Global Background Image Layer */}
+        <div className="fixed inset-0 -z-50 bg-[#0b0e1a]">
+          <picture>
+            <img 
+              src="/assets/background.jpg" 
+              alt="Global Background" 
+              className="absolute inset-0 h-full w-full object-cover opacity-65 blur-[4px] grayscale-[30%] contrast-110" 
+            />
+          </picture>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#0b0e1a]/80" />
+          <div className="absolute inset-0 page-grid opacity-70" />
+        </div>
         <GlobalLoader />
         {children}
       </body>

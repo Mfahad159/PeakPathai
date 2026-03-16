@@ -205,12 +205,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-hidden"
-      style={{ background: 'var(--color-bg)' }}>
-
-      {/* Grid overlay */}
-      <div className="page-grid pointer-events-none absolute inset-0 z-0" />
-
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-hidden">
       {/* Glow */}
       <div className="glow-blob" />
 

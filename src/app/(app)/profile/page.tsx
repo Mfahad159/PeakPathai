@@ -35,7 +35,7 @@ export default async function ProfilePage() {
         
 
         
-        <div className="glass-card overflow-hidden p-8" style={{ background: 'var(--color-bg)' }}>
+        <div className="glass-card overflow-hidden p-8" style={{ background: 'var(--color-surface)' }}>
           <h1 className="text-3xl font-extrabold text-white leading-tight">
             My Profile
           </h1>

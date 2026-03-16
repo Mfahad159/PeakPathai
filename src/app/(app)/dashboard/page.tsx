@@ -623,7 +623,7 @@ export default function DashboardPage() {
                   >
                     <OpportunityCard 
                       opportunity={opp} 
-                      onSaveToggle={(id, saved) => {
+                      onSaveToggle={(id: string, saved: boolean) => {
                         setOpportunities(prev => prev.map(o => o.id === id ? { ...o, saved } : o))
                       }}
                     />
@@ -653,8 +653,8 @@ export default function DashboardPage() {
         <div className="fixed bottom-24 md:bottom-10 right-4 sm:right-10 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
            <div className="glass-card flex items-center gap-4 bg-orange-600/90 py-3 px-5 shadow-2xl backdrop-blur border border-white/20">
              <div className="text-white">
-                <p className="text-sm font-bold">Bookmark to Save</p>
-                <p className="text-xs text-white/90">Click bookmark on opportunities you want to track — only saved ones will be stored in your dashboard.</p>
+                <p className="text-sm font-bold">Action Required</p>
+                <p className="text-xs text-white/90">Bookmark to save the opportunity, otherwise it will disappear with signout.</p>
              </div>
              <button onClick={() => setShowBookmarkToast(false)} className="text-white/70 hover:text-white transition-colors">
                <X size={16} />

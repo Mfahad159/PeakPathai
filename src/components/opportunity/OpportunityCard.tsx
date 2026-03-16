@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Opportunity } from '@/types'
+import { Bookmark, MapPin, DollarSign, Target, Calendar, ExternalLink } from 'lucide-react'
 
 interface Props {
   opportunity: Opportunity
@@ -21,13 +22,12 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
 
     setIsSaving(true)
     const newSavedState = !isSaved
-    setIsSaved(newSavedState) // Optimistic update
+    setIsSaved(newSavedState)
 
     try {
       let currentRealId = realId
       
       if (newSavedState && currentRealId.startsWith('temp_')) {
-        // Not in DB yet, insert full record
         const res = await fetch('/api/opportunities/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -38,7 +38,6 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
         currentRealId = data.opportunity.id
         setRealId(currentRealId) // Lock in DB ID
       } else {
-        // Toggle existing record
         const res = await fetch(`/api/opportunities/${currentRealId}/save`, {
           method: 'PATCH',
         })
@@ -50,7 +49,7 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
       }
     } catch (err) {
       console.error(err)
-      setIsSaved(!newSavedState) // Revert on failure
+      setIsSaved(!newSavedState)
     } finally {
       setIsSaving(false)
     }
@@ -71,89 +70,95 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
     }
   }
 
-  // Determine funding badge color
-  const getFundingColor = (type: string) => {
-    const t = type.toLowerCase()
-    if (t.includes('fully') || t.includes('full')) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-    if (t.includes('partial')) return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-    return 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
-  }
-
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/5" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
-      {/* ── Top row: Provider + Save ── */}
-      <div className="mb-3 flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <p className="text-xs font-semibold tracking-wide" style={{ color: 'var(--color-muted)' }}>
-            {opportunity.provider}
-          </p>
-          <h3 className="mt-1 line-clamp-2 text-lg font-bold text-white group-hover:text-orange-400 transition-colors">
-            {opportunity.title}
-          </h3>
+    <div className="rounded-xl border border-white/10 bg-[#0b0e1a]/80 shadow flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10 transition-all w-full relative">
+      
+      {/* ── CardHeader ── */}
+      <div className="flex flex-col space-y-1.5 p-6 pb-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1.5 text-left flex-1">
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>
+              {opportunity.provider}
+            </p>
+            <h3 className="font-semibold leading-tight text-white text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+              {opportunity.title}
+            </h3>
+          </div>
+          
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="cursor-pointer rounded-full p-2 transition-colors hover:bg-white/10 shrink-0 shadow-sm border border-white/5 bg-[#121626]"
+            title={isSaved ? "Remove from saved" : "Save opportunity"}
+          >
+            <Bookmark 
+              className={`h-4 w-4 ${isSaved ? 'text-orange-500 fill-orange-500' : 'text-zinc-400 hover:text-white'}`} 
+            />
+          </button>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="cursor-pointer rounded-full p-2 transition-colors hover:bg-white/5"
-          title={isSaved ? "Remove from saved" : "Save opportunity"}
-        >
-          {isSaved ? (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-orange-500">
-              <path fillRule="evenodd" d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z" clipRule="evenodd" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-zinc-400 hover:text-white">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-            </svg>
-          )}
-        </button>
       </div>
 
-      {/* ── Badges ── */}
-      <div className="mb-4 flex flex-wrap gap-2">
-        <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${getFundingColor(opportunity.funding_type)}`}>
-          {opportunity.funding_type || 'Funding varies'}
-        </span>
-        <span className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-white/5 text-zinc-300 border-white/10">
-          📍 {opportunity.location || 'Location not specified'}
-        </span>
-      </div>
-
-      {/* ── Details ── */}
-      <div className="mb-5 space-y-1 text-sm text-zinc-400">
-        <p><span className="font-semibold text-zinc-300">Field:</span> {opportunity.field}</p>
-        <p><span className="font-semibold text-zinc-300">Deadline:</span> <span className={opportunity.deadline ? 'text-orange-400/90' : ''}>{opportunity.deadline || 'No deadline found'}</span></p>
-      </div>
-
-      <p className="mb-6 line-clamp-2 text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-        {opportunity.description}
-      </p>
-
-      {/* ── Bottom CTA ── */}
-      <div className="pr-1 pt-1 border-t align-bottom flex justify-between items-center" style={{ borderColor: 'var(--color-border)' }}>
-        {opportunity.seen && (
-          <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Viewed</span>
-        )}
-        {!opportunity.seen && <span />}
-        <Link
-          href={`/opportunities/${realId}`}
-          className={`cursor-pointer inline-flex items-center gap-1 mt-3 px-4 py-2 text-sm font-semibold transition-colors hover:text-orange-400 ${realId.startsWith('temp_') ? 'pointer-events-none opacity-50' : ''}`}
-          style={{ color: 'var(--color-primary)' }}
-        >
-          {realId.startsWith('temp_') ? "Save to View Details" : "View Details →"}
-        </Link>
-      </div>
-
-      {/* ── Email Toggle ── */}
-      {isSaved && !realId.startsWith('temp_') && (
-        <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-          <span className="text-xs text-zinc-400">Notify me of updates</span>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input type="checkbox" className="peer sr-only" checked={notifyUpdates} onChange={handleNotifyToggle} disabled={isSaving} />
-            <div className="peer h-5 w-9 rounded-full bg-zinc-700 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-orange-500 peer-checked:after:translate-x-full"></div>
-          </label>
+      {/* ── CardContent ── */}
+      <div className="px-6 py-2 flex-1 flex flex-col text-sm text-zinc-300">
+        
+        {/* Badges Row */}
+        <div className="flex flex-wrap gap-2 mb-5">
+           <span className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-300">
+             <DollarSign className="w-3.5 h-3.5 mr-1" /> {opportunity.funding_type || 'Funding varies'}
+           </span>
+           <span className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-300">
+             <MapPin className="w-3.5 h-3.5 mr-1" /> {opportunity.location || 'Location not specified'}
+           </span>
         </div>
-      )}
+        
+        {/* Data Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 text-xs font-medium bg-white/5 p-3 rounded-lg border border-white/5">
+           <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-orange-400/80" /> 
+              <span className="line-clamp-1">{opportunity.field}</span>
+           </div>
+           <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-orange-400/80" /> 
+              <span className="line-clamp-1">{opportunity.deadline || 'No deadline found'}</span>
+           </div>
+        </div>
+        
+        {/* Description */}
+        <p className="line-clamp-3 text-sm leading-relaxed flex-1" style={{ color: 'var(--color-muted)' }}>
+          {opportunity.description}
+        </p>
+      </div>
+
+      {/* ── CardFooter ── */}
+      <div className="p-6 pt-4 flex flex-col gap-3 border-t border-white/5 mt-auto bg-white/[0.02]">
+         
+         <div className="flex items-center justify-between w-full">
+            <div className="text-xs">
+               {opportunity.seen && <span className="font-bold tracking-widest text-zinc-500 uppercase">Viewed</span>}
+            </div>
+            <Link
+              href={`/opportunities/${realId}`}
+              className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold transition-colors hover:text-orange-400 ${realId.startsWith('temp_') ? 'pointer-events-none opacity-50' : ''}`}
+              style={{ color: 'var(--color-primary)' }}
+            >
+              {realId.startsWith('temp_') ? "Save to View" : "View Details"}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+         </div>
+
+         {/* ── Email Toggle (shadcn aesthetic switch) ── */}
+         {isSaved && !realId.startsWith('temp_') && (
+           <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
+             <span className="text-xs text-zinc-400 font-medium">Notify me of updates</span>
+             <label className="relative inline-flex cursor-pointer items-center">
+               <input type="checkbox" className="peer sr-only" checked={notifyUpdates} onChange={handleNotifyToggle} disabled={isSaving} />
+               <div className="peer h-5 w-9 rounded-full bg-zinc-700 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all peer-checked:bg-orange-500 peer-checked:after:translate-x-full"></div>
+             </label>
+           </div>
+         )}
+         
+      </div>
+
     </div>
   )
 }

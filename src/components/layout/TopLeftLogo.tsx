@@ -11,10 +11,9 @@ export default function TopLeftLogo() {
         WebkitBackdropFilter: 'blur(20px)',
       }}
     >
-      <div className="flex items-center tracking-tight ml-1 pr-2">
-        <span className="text-xl font-bold text-orange-500">Peak</span>
-        <span className="text-xl font-light text-white">Path</span>
-        <span className="text-xl font-bold text-orange-500">.</span>
+      <div className="flex items-baseline font-sans tracking-[-0.08em] ml-1 pr-2">
+        <span className="text-2xl font-black text-white">PEAK</span>
+        <span className="text-2xl font-light text-orange-500">PATH</span>
       </div>
     </Link>
   )

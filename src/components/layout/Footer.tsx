@@ -6,10 +6,9 @@ export default function Footer() {
       <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-6 md:flex-row md:items-start px-6">
         {/* Left Side: Logo & Slogan */}
         <div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
-          <div className="flex items-center tracking-tight">
-            <span className="text-3xl font-bold text-orange-500">Peak</span>
-            <span className="text-3xl font-light text-white">Path</span>
-            <span className="text-3xl font-bold text-orange-500">.</span>
+          <div className="flex items-baseline font-sans tracking-[-0.08em]">
+            <span className="text-4xl font-black text-white">PEAK</span>
+            <span className="text-4xl font-light text-orange-500">PATH</span>
           </div>
           <p className="max-w-xs text-sm text-zinc-400">
             Empowering your academic journey with AI-driven discovery.

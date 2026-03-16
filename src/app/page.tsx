@@ -34,19 +34,29 @@ function Header() {
           <div className="flex w-full items-center justify-between md:w-auto">
             {/* Logo */}
             <div className="flex shrink-0 items-center md:mr-4">
-              <div className="flex items-center tracking-tight">
-                <span className="text-2xl font-bold text-orange-500">Peak</span>
-                <span className="text-2xl font-light text-white">Path</span>
-                <span className="text-2xl font-bold text-orange-500">.</span>
+              <div className="flex items-baseline font-sans tracking-[-0.08em]">
+                <span className="text-2xl font-black text-white">PEAK</span>
+                <span className="text-2xl font-light text-orange-500">PATH</span>
               </div>
             </div>
 
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden text-zinc-400 hover:text-white p-1"
+              className="md:hidden relative flex h-8 w-8 items-center justify-center text-zinc-400 hover:text-white"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mobileMenuOpen ? 'close' : 'open'}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute"
+                >
+                  {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
 
@@ -76,9 +86,10 @@ function Header() {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div 
-              initial={{ opacity: 0, y: -15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15, transition: { duration: 0.2 } }}
+              key="mobile-dropdown-menu"
+              initial={{ opacity: 0, y: -15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -15, scale: 0.95, transition: { duration: 0.2 } }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
               className="absolute top-full left-0 right-0 mt-2 flex flex-col gap-4 rounded-2xl border p-5 text-center md:hidden"
               style={{

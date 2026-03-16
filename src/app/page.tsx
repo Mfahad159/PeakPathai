@@ -22,7 +22,7 @@ function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4">
       <div className="relative w-full md:w-auto">
         <nav
-          className="flex w-full md:w-auto items-center justify-between gap-6 rounded-2xl px-5 py-3 transition-all duration-300"
+          className="flex w-full md:w-auto items-center justify-between gap-6 rounded-2xl px-5 py-3 transition-all duration-300 opacity-95 "
           style={{
             background: scrolled || mobileMenuOpen ? 'rgba(11,14,26,0.85)' : 'rgba(11,14,26,0.4)',
             backdropFilter: 'blur(20px)',

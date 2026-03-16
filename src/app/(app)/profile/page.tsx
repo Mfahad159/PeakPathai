@@ -165,7 +165,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-10">
+    <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
       <div className="mx-auto max-w-3xl space-y-8">
         
         {/* Header */}

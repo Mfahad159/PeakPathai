@@ -88,6 +88,7 @@ export default function DashboardPage() {
   const [quota, setQuota] = useState<QuotaInfo | null>(null)
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [quotaError, setQuotaError] = useState(false)
   const [searched, setSearched] = useState(false)
@@ -135,6 +136,7 @@ export default function DashboardPage() {
 
     const used = quotaData?.searches_used ?? 0
     setQuota({ searches_used: used, searches_remaining: 5 - used })
+    setInitialLoading(false)
   }, [])
 
   useEffect(() => { loadInitialData() }, [loadInitialData])
@@ -182,8 +184,40 @@ export default function DashboardPage() {
     return day === 1 ? 7 : (8 - day) % 7
   })()
 
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <div className="animate-pulse mb-6">
+            <div className="h-3 w-16 bg-white/10 rounded mb-3"></div>
+            <div className="h-8 w-64 bg-white/10 rounded mb-3"></div>
+            <div className="h-3 w-48 bg-white/5 rounded"></div>
+          </div>
+          
+          {/* Quota Bar Skeleton */}
+          <div className="glass-card px-5 py-4 h-20 animate-pulse bg-white/5" style={{ borderColor: 'var(--color-border)' }}></div>
+          
+          {/* Search Box Skeleton */}
+          <div className="glass-card p-6 h-56 animate-pulse bg-white/5" style={{ borderColor: 'var(--color-border)' }}></div>
+          
+          <div className="mt-8 flex gap-6 border-b border-white/10 pb-3">
+             <div className="h-4 w-20 bg-white/10 rounded animate-pulse"></div>
+             <div className="h-4 w-16 bg-white/5 rounded animate-pulse"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-6">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen px-6 py-10">
+    <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -194,7 +228,7 @@ export default function DashboardPage() {
 
 
         {/* ── Header ── */}
-        <div className="flex items-start justify-between mt-12">
+        <div className="flex items-start justify-between">
           <div>
             <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>Overview</p>
             <h1 className="mt-1 text-3xl font-bold text-white relative inline-block" style={{ fontFamily: 'Georgia, serif' }}>

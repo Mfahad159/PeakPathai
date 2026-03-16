@@ -68,6 +68,11 @@ function LoaderContent() {
 }
 
 export default function GlobalLoader() {
+  const pathname = usePathname()
+  const isOuterRoute = pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/onboarding')
+  
+  if (!isOuterRoute) return null
+
   return (
     <Suspense fallback={null}>
       <LoaderContent />

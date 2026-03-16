@@ -76,6 +76,7 @@ export default function ProfilePage() {
   }
 
   const handleSignOut = async () => {
+    await fetch('/api/auth/signout', { method: 'POST' })
     await supabase.auth.signOut()
     window.location.href = '/'
   }
@@ -126,7 +127,7 @@ export default function ProfilePage() {
                   disabled={saveLoading}
                   className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-400 disabled:opacity-50"
                 >
-                  {saveLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                  {saveLoading ? <span className="text-xs font-bold">...</span> : <Check className="h-4 w-4" />}
                 </button>
                 <button
                   onClick={() => { setEditingField(null); setSaveError(null) }}

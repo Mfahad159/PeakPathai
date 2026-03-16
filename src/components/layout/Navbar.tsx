@@ -26,12 +26,13 @@ export default function Navbar({ user, profileName }: NavbarProps) {
   ]
 
   const handleSignOut = async () => {
+    await fetch('/api/auth/signout', { method: 'POST' })
     await supabase.auth.signOut()
     window.location.href = '/'
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0b0e1a]/80 backdrop-blur-md">
+    <nav className="relative z-50 border-b border-white/10 bg-[#0b0e1a]/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Logo */}

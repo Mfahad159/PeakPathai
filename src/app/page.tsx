@@ -33,19 +33,12 @@ function Header() {
         >
           <div className="flex w-full items-center justify-between md:w-auto">
             {/* Logo */}
-            <div className="flex shrink-0 items-center gap-2 md:mr-4">
-              <div className="relative h-8 w-8 overflow-hidden rounded-md bg-black/20 shrink-0 flex flex-col items-center justify-center border border-white/10">
-                <Image 
-                  src="/assets/logo_peak_path_ai.webp" 
-                  alt="PeakPath AI" 
-                  fill
-                  unoptimized
-                  className="object-contain scale-110"
-                />
+            <div className="flex shrink-0 items-center md:mr-4">
+              <div className="flex items-center tracking-tight">
+                <span className="text-2xl font-bold text-orange-500">Peak</span>
+                <span className="text-2xl font-light text-white">Path</span>
+                <span className="text-2xl font-bold text-orange-500">.</span>
               </div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-orange-400">
-                Peak<span className="text-white">Path</span>
-              </span>
             </div>
 
             {/* Mobile Menu Toggle */}

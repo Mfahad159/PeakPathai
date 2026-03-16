@@ -64,12 +64,14 @@ export default function DashboardPage() {
   const [showPrefs, setShowPrefs] = useState(false)
   const [activeTab, setActiveTab] = useState<'all' | 'saved'>('all')
 
-  // week start: Monday
+  // Week start: Monday (Explicitly computed in UTC to match server)
   function getWeekStart() {
     const now = new Date()
-    const day = now.getDay()
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-    const monday = new Date(now.setDate(diff))
+    // Local to UTC to prevent drift
+    const utcNow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+    const day = utcNow.getUTCDay()
+    const diff = utcNow.getUTCDate() - day + (day === 0 ? -6 : 1)
+    const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff))
     return monday.toISOString().split('T')[0]
   }
 

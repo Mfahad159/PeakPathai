@@ -194,11 +194,11 @@ export default function DashboardPage() {
 
 
         {/* ── Header ── */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between mt-12">
           <div>
             <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>Overview</p>
             <h1 className="mt-1 text-3xl font-bold text-white relative inline-block" style={{ fontFamily: 'Georgia, serif' }}>
-              Welcome back, {firstName} 👋
+              Welcome back, {firstName}
               {unseenCount > 0 && (
                 <span className="absolute -top-1 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg animate-bounce">
                   {unseenCount}

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { searchOpportunities } from '@/lib/tavily/search'
 import { parseOpportunities } from '@/lib/openrouter/parse'
 import { sendOpportunityDigest } from '@/lib/email/sendOpportunityDigest'
+import { getWeekStart } from '@/lib/date'
 
 export async function GET(request: Request) {
   try {
@@ -39,13 +40,8 @@ export async function GET(request: Request) {
 
     console.log(`Found ${profiles.length} users to process for timeslot`)
 
-    // Week start calculation (Monday = 1)
-    const weekStart = new Date(now)
-    const day = weekStart.getUTCDay()
-    const diff = weekStart.getUTCDate() - day + (day === 0 ? -6 : 1)
-    weekStart.setUTCDate(diff)
-    weekStart.setUTCHours(0, 0, 0, 0)
-    const weekStartIso = weekStart.toISOString().split('T')[0]
+    // Week start calculation
+    const weekStartIso = getWeekStart(now)
 
     const processedUsers = []
 

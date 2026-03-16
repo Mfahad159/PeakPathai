@@ -7,16 +7,9 @@ import { parseOpportunities } from '@/lib/openrouter/parse'
 import { resend } from '@/lib/email/resend'
 import { OpportunitiesEmail } from '@/components/emails/OpportunitiesEmail'
 import { Profile } from '@/types'
+import { getWeekStart } from '@/lib/date'
 
-// Get Monday of the current week as YYYY-MM-DD in UTC exclusively
-function getWeekStart(): string {
-  const now = new Date()
-  const utcNow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
-  const day = utcNow.getUTCDay() // 0 = Sunday
-  const diff = utcNow.getUTCDate() - day + (day === 0 ? -6 : 1) // align to Monday
-  const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff))
-  return monday.toISOString().split('T')[0]
-}
+
 
 export async function POST(request: NextRequest) {
   try {

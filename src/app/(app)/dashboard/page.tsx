@@ -6,6 +6,7 @@ import { Opportunity } from '@/types'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import OpportunityCard from '@/components/opportunity/OpportunityCard'
+import { getWeekStart } from '@/lib/date'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -64,16 +65,7 @@ export default function DashboardPage() {
   const [showPrefs, setShowPrefs] = useState(false)
   const [activeTab, setActiveTab] = useState<'all' | 'saved'>('all')
 
-  // Week start: Monday (Explicitly computed in UTC to match server)
-  function getWeekStart() {
-    const now = new Date()
-    // Local to UTC to prevent drift
-    const utcNow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
-    const day = utcNow.getUTCDay()
-    const diff = utcNow.getUTCDate() - day + (day === 0 ? -6 : 1)
-    const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), diff))
-    return monday.toISOString().split('T')[0]
-  }
+
 
   // Close dropdown on click outside
   useEffect(() => {

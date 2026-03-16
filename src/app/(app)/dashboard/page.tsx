@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import OpportunityCard from '@/components/opportunity/OpportunityCard'
 import { getWeekStart } from '@/lib/date'
-import { AlertCircle, Search, Hourglass } from 'lucide-react'
+import { AlertCircle, Search, Hourglass, Edit2, X, Info } from 'lucide-react'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -15,6 +15,17 @@ const COUNTRIES = [
   "Singapore", "China", "New Zealand", "Ireland", "Italy", "Spain", "Norway", 
   "Denmark", "Finland", "Austria", "Belgium"
 ]
+
+const LABELS: Record<string, string> = {
+  'undergraduate': 'Undergraduate',
+  'masters': 'Masters',
+  'phd': 'PhD',
+  'postdoc': 'Postdoc',
+  'any': 'Any Funding',
+  'fully_funded': 'Fully Funded',
+  'partial': 'Partial',
+  'research_fellowship': 'Research Fellowship'
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface QuotaInfo {
@@ -100,6 +111,9 @@ export default function DashboardPage() {
   const [fundingPref, setFundingPref] = useState('any')
   const [showPrefs, setShowPrefs] = useState(false)
   const [activeTab, setActiveTab] = useState<'all' | 'saved'>('all')
+  const [showBookmarkToast, setShowBookmarkToast] = useState(false)
+  const [searchStatusMsg, setSearchStatusMsg] = useState<string | null>(null)
+  const [visibleCount, setVisibleCount] = useState(10)
 
 
 
@@ -132,6 +146,7 @@ export default function DashboardPage() {
 
     if (oppsData) {
       setOpportunities(oppsData)
+      setVisibleCount(10)
     }
 
     const used = quotaData?.searches_used ?? 0
@@ -163,9 +178,17 @@ export default function DashboardPage() {
         return
       }
 
-      if (!res.ok) throw new Error(data.error ?? 'Search failed')
-
-      setOpportunities(data.opportunities ?? [])
+      if (data.status === 'no_new_results') {
+        setSearchStatusMsg(data.message)
+        // Ensure toast doesn't show for empty results
+        setOpportunities([])
+      } else {
+        setSearchStatusMsg(null)
+        setOpportunities(data.opportunities ?? [])
+        setShowBookmarkToast(true) // Trigger toast on fresh success
+        setVisibleCount(10)
+      }
+      
       setQuota({ searches_used: data.searches_used, searches_remaining: data.searches_remaining })
       setSearched(true)
     } catch (err: any) {
@@ -174,6 +197,15 @@ export default function DashboardPage() {
       setLoading(false)
     }
   }
+
+  // Toast Auto-dismiss
+  useEffect(() => {
+    let t: NodeJS.Timeout
+    if (showBookmarkToast) {
+      t = setTimeout(() => setShowBookmarkToast(false), 6000)
+    }
+    return () => clearTimeout(t)
+  }, [showBookmarkToast])
 
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Scholar'
   const unseenCount = opportunities.filter(o => !o.seen).length
@@ -251,7 +283,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="glass-card flex items-center justify-between border-orange-500/50 bg-orange-500/10 p-4"
+            className="glass-card flex items-center justify-between border-orange-500/50 bg-orange-500/10 p-4 mb-6"
           >
             <div className="flex items-center gap-3 text-orange-400">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 animate-pulse">
@@ -261,6 +293,53 @@ export default function DashboardPage() {
             </div>
           </motion.div>
         )}
+
+        {/* ── Search Preference Summary ── */}
+        <motion.div
+           initial={{ opacity: 0, y: 15 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.4, delay: 0.25 }}
+           className="glass-card mb-6"
+        >
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+             <div className="flex items-center gap-2">
+                <Search className="h-4 w-4 text-orange-400" />
+                <h3 className="text-sm font-bold text-white">Search Preferences</h3>
+             </div>
+             <Link href="/profile" className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white transition-colors">
+                <Edit2 className="h-3 w-3" /> Edit Profile
+             </Link>
+          </div>
+          
+          <div className="p-5">
+             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+               <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Degree Level</p>
+                  <p className="text-sm text-zinc-200">{LABELS[profile?.degree_level] || profile?.degree_level || '—'}</p>
+               </div>
+               <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Field of Study</p>
+                  <p className="text-sm text-zinc-200">{profile?.field_of_study || '—'}</p>
+               </div>
+               <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Country</p>
+                  <p className="text-sm text-zinc-200">{profile?.country || '—'}</p>
+               </div>
+               <div>
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Funding</p>
+                  <p className="text-sm text-zinc-200">{LABELS[profile?.funding_preference] || profile?.funding_preference || '—'}</p>
+               </div>
+             </div>
+             {(!profile?.degree_level || !profile?.field_of_study || !profile?.country || !profile?.funding_preference) && (
+               <div className="mt-4 flex items-start gap-2 rounded bg-yellow-500/10 p-3 text-yellow-500/90 border border-yellow-500/20">
+                 <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                 <p className="text-xs">
+                   Some preferences are missing — your results may be broad. <Link href="/profile" className="font-semibold underline hover:text-yellow-400 text-yellow-500">Complete your profile</Link> for better matches.
+                 </p>
+               </div>
+             )}
+          </div>
+        </motion.div>
 
         {/* ── Quota Bar ── */}
         <motion.div
@@ -477,13 +556,13 @@ export default function DashboardPage() {
         {/* ── Tabs ── */}
         <div className="mt-8 flex border-b" style={{ borderColor: 'var(--color-border)' }}>
           <button
-            onClick={() => setActiveTab('all')}
+            onClick={() => { setActiveTab('all'); setVisibleCount(10); }}
             className={`cursor-pointer px-4 py-3 text-sm font-semibold transition-colors ${activeTab === 'all' ? 'border-b-2 border-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             All Results
           </button>
           <button
-            onClick={() => setActiveTab('saved')}
+            onClick={() => { setActiveTab('saved'); setVisibleCount(10); }}
             className={`cursor-pointer px-4 py-3 text-sm font-semibold transition-colors ${activeTab === 'saved' ? 'border-b-2 border-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             Saved
@@ -494,6 +573,16 @@ export default function DashboardPage() {
         {(() => {
           const displayedOpps = activeTab === 'saved' ? opportunities.filter(o => o.saved) : opportunities
           
+          if (searchStatusMsg && activeTab === 'all' && !loading) {
+            return (
+              <div className="glass-card flex flex-col items-center justify-center p-8 mt-6 text-center border-orange-500/30 bg-orange-500/5">
+                <div className="text-orange-400 mb-3 bg-orange-500/10 p-3 rounded-full"><AlertCircle className="h-8 w-8" /></div>
+                <h3 className="text-sm font-bold text-white">Up to date!</h3>
+                <p className="text-xs text-orange-200 mt-2 max-w-sm">{searchStatusMsg}</p>
+              </div>
+            )
+          }
+
           if (displayedOpps.length === 0 && !loading && !error) {
             return (
               <div className="glass-card mt-6 p-8 text-center">
@@ -525,12 +614,12 @@ export default function DashboardPage() {
                 {displayedOpps.length} {activeTab === 'saved' ? 'saved opportunities' : 'opportunities found'}
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {displayedOpps.map((opp, i) => (
+                {displayedOpps.slice(0, visibleCount).map((opp, i) => (
                   <motion.div
                     key={opp.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.1 * i + 0.5 }}
+                    transition={{ duration: 0.4, delay: 0.1 * (i % 10) }}
                   >
                     <OpportunityCard 
                       opportunity={opp} 
@@ -541,11 +630,39 @@ export default function DashboardPage() {
                   </motion.div>
                 ))}
               </div>
+
+              {/* ── See More Button ── */}
+              {visibleCount < displayedOpps.length && (
+                <div className="mt-8 text-center pb-4">
+                  <button
+                    onClick={() => setVisibleCount(prev => prev + 10)}
+                    className="cursor-pointer inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 py-3 text-sm font-medium text-zinc-300 transition-all hover:bg-white/10 hover:text-white"
+                  >
+                    Load More
+                  </button>
+                </div>
+              )}
             </motion.div>
           )
         })()}
 
       </motion.div>
+
+      {/* ── Toast Bookmark Prompt ── */}
+      {showBookmarkToast && (
+        <div className="fixed bottom-24 md:bottom-10 right-4 sm:right-10 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
+           <div className="glass-card flex items-center gap-4 bg-orange-600/90 py-3 px-5 shadow-2xl backdrop-blur border border-white/20">
+             <div className="text-white">
+                <p className="text-sm font-bold">Bookmark to Save</p>
+                <p className="text-xs text-white/90">Click bookmark on opportunities you want to track — only saved ones will be stored in your dashboard.</p>
+             </div>
+             <button onClick={() => setShowBookmarkToast(false)} className="text-white/70 hover:text-white transition-colors">
+               <X size={16} />
+             </button>
+           </div>
+        </div>
+      )}
+
     </div>
   )
 }

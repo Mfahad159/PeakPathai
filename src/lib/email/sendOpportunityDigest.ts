@@ -9,14 +9,15 @@ export async function sendOpportunityDigest(
   firstName: string,
   opportunities: Opportunity[]
 ): Promise<void> {
-  if (!opportunities || opportunities.length === 0) return
+  const filteredOpps = opportunities.filter((o) => o.notify_updates !== false)
+  if (!filteredOpps || filteredOpps.length === 0) return
 
   try {
     const { data, error } = await resend.emails.send({
       from: 'PeakPath <notifications@demo.peakpath.ai>', // Update with verified domain
       to: [userEmail],
-      subject: `Your weekly scholarship digest is ready — ${opportunities.length} new opportunities found`,
-      react: OpportunitiesEmail({ opportunities, firstName }),
+      subject: `Your weekly scholarship digest is ready — ${filteredOpps.length} new opportunities found`,
+      react: OpportunitiesEmail({ opportunities: filteredOpps, firstName }),
     })
 
     if (error) {

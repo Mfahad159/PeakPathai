@@ -25,10 +25,11 @@ export interface Opportunity {
   field: string;
   description: string;
   source_url: string;
-  raw_data: any;
+  raw_data?: any;
   saved: boolean;
   seen: boolean;
-  created_at: string;
+  notify_updates?: boolean;
+  created_at?: string;
 }
 
 export interface SearchQuota {

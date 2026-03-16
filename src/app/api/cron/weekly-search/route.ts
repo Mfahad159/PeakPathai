@@ -86,6 +86,7 @@ export async function GET(request: Request) {
           source_url: opp.source_url || null,
           raw_data: opp.raw_data || null,
           seen: false, // Explicitly false so the UI badge lights up
+          notify_updates: true
         }))
 
         const { data: insertedOpps, error: insertErr } = await supabase

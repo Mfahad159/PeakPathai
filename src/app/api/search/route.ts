@@ -92,35 +92,65 @@ export async function POST(request: NextRequest) {
 
     const parsed = await parseOpportunities(rawResults)
 
-    // ── Insert Opportunities ──────────────────────────────────────────
-    let inserted: any[] = []
+    // ── Deduplicate against DB ───────────────────────────────────────
+    let finalParsed = parsed
     if (parsed.length > 0) {
-      const rows = parsed.map((opp) => ({
-        user_id: user.id,
-        title: opp.title,
-        provider: opp.provider,
-        deadline: opp.deadline,
-        funding_type: opp.funding_type,
-        location: opp.location,
-        field: opp.field,
-        description: opp.description,
-        source_url: opp.source_url,
-        raw_data: null,
-        saved: false,
-        seen: false,
-      }))
+      const titles = parsed.map((o) => o.title).filter(Boolean)
+      const urls = parsed.map((o) => o.source_url).filter(Boolean)
 
-      const { data: insertedData, error: insertError } = await admin
-        .from('opportunities')
-        .insert(rows)
-        .select()
+      let existingRecords: any[] = []
+      try {
+        const { data } = await admin
+          .from('opportunities')
+          .select('title, source_url')
+          .eq('user_id', user.id)
+          .or(`title.in.(${titles.map(t => `"${t.replace(/"/g, '""')}"`).join(',')}),source_url.in.(${urls.map(u => `"${u.replace(/"/g, '""')}"`).join(',')})`)
+        existingRecords = data || []
+      } catch (e) {
+        existingRecords = []
+      }
+      
+      if (existingRecords && existingRecords.length > 0) {
+        const existingTitles = new Set(existingRecords.map((r: any) => r.title?.toLowerCase()))
+        const existingUrls = new Set(existingRecords.map((r: any) => r.source_url?.toLowerCase()))
 
-      if (insertError) {
-        console.error('Insert error:', insertError)
-      } else {
-        inserted = insertedData ?? []
+        finalParsed = parsed.filter(opp => {
+          const t = opp.title?.toLowerCase()
+          const u = opp.source_url?.toLowerCase()
+          return !(t && existingTitles.has(t)) && !(u && existingUrls.has(u))
+        })
       }
     }
+
+    if (finalParsed.length === 0) {
+       // Increment quota since search still happened and returned valid results (just dupes)
+       await admin.from('search_quota').upsert({ user_id: user.id, week_start: weekStart, searches_used: searchesUsed + 1}, { onConflict: 'user_id,week_start' })
+       
+       return NextResponse.json({ 
+         status: 'no_new_results', 
+         message: "No new opportunities found — you're up to date.",
+         searches_used: searchesUsed + 1,
+         searches_remaining: 4 - searchesUsed
+       }, { status: 200 })
+    }
+
+    // ── Prepare Temporary Payload (NO DB INSERT) ─────────────────────
+    const localReturn = finalParsed.map((opp, idx) => ({
+      id: `temp_${Date.now()}_${idx}`, // temporary ID
+      user_id: user.id,
+      title: opp.title,
+      provider: opp.provider,
+      deadline: opp.deadline,
+      funding_type: opp.funding_type,
+      location: opp.location,
+      field: opp.field,
+      description: opp.description,
+      source_url: opp.source_url,
+      raw_data: null,
+      saved: false,
+      seen: false,
+      notify_updates: true
+    }))
 
     // ── Increment Quota ───────────────────────────────────────────────
     await admin
@@ -135,7 +165,7 @@ export async function POST(request: NextRequest) {
       )
 
     return NextResponse.json({
-      opportunities: inserted,
+      opportunities: localReturn,
       searches_used: searchesUsed + 1,
       searches_remaining: 4 - searchesUsed,
     })

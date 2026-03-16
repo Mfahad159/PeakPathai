@@ -12,6 +12,8 @@ interface Props {
 export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
   const [isSaved, setIsSaved] = useState(opportunity.saved)
   const [isSaving, setIsSaving] = useState(false)
+  const [realId, setRealId] = useState(opportunity.id)
+  const [notifyUpdates, setNotifyUpdates] = useState(opportunity.notify_updates ?? true)
 
   const handleSave = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -22,10 +24,26 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
     setIsSaved(newSavedState) // Optimistic update
 
     try {
-      const res = await fetch(`/api/opportunities/${opportunity.id}/save`, {
-        method: 'PATCH',
-      })
-      if (!res.ok) throw new Error('Failed to save')
+      let currentRealId = realId
+      
+      if (newSavedState && currentRealId.startsWith('temp_')) {
+        // Not in DB yet, insert full record
+        const res = await fetch('/api/opportunities/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ opportunity }),
+        })
+        if (!res.ok) throw new Error('Failed to create saved row')
+        const data = await res.json()
+        currentRealId = data.opportunity.id
+        setRealId(currentRealId) // Lock in DB ID
+      } else {
+        // Toggle existing record
+        const res = await fetch(`/api/opportunities/${currentRealId}/save`, {
+          method: 'PATCH',
+        })
+        if (!res.ok) throw new Error('Failed to toggle save')
+      }
       
       if (onSaveToggle) {
         onSaveToggle(opportunity.id, newSavedState)
@@ -35,6 +53,21 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
       setIsSaved(!newSavedState) // Revert on failure
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleNotifyToggle = async () => {
+    const newVal = !notifyUpdates
+    setNotifyUpdates(newVal)
+    try {
+      await fetch(`/api/opportunities/${realId}/notify`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notify_updates: newVal }),
+      })
+    } catch (err) {
+      console.error('Failed to toggle notify', err)
+      setNotifyUpdates(!newVal)
     }
   }
 
@@ -103,13 +136,24 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
         )}
         {!opportunity.seen && <span />}
         <Link
-          href={`/opportunities/${opportunity.id}`}
-          className="cursor-pointer inline-flex items-center gap-1 mt-3 px-4 py-2 text-sm font-semibold transition-colors hover:text-orange-400"
+          href={`/opportunities/${realId}`}
+          className={`cursor-pointer inline-flex items-center gap-1 mt-3 px-4 py-2 text-sm font-semibold transition-colors hover:text-orange-400 ${realId.startsWith('temp_') ? 'pointer-events-none opacity-50' : ''}`}
           style={{ color: 'var(--color-primary)' }}
         >
-          View Details →
+          {realId.startsWith('temp_') ? "Save to View Details" : "View Details →"}
         </Link>
       </div>
+
+      {/* ── Email Toggle ── */}
+      {isSaved && !realId.startsWith('temp_') && (
+        <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+          <span className="text-xs text-zinc-400">Notify me of updates</span>
+          <label className="relative inline-flex cursor-pointer items-center">
+            <input type="checkbox" className="peer sr-only" checked={notifyUpdates} onChange={handleNotifyToggle} disabled={isSaving} />
+            <div className="peer h-5 w-9 rounded-full bg-zinc-700 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-orange-500 peer-checked:after:translate-x-full"></div>
+          </label>
+        </div>
+      )}
     </div>
   )
 }

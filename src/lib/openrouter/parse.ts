@@ -100,7 +100,7 @@ export async function parseOpportunities(
       return []
     }
 
-    return parsed.map((item: any) => ({
+    let mapped = parsed.map((item: any) => ({
       title: item.title ?? 'Untitled',
       provider: item.provider ?? 'Unknown',
       deadline: item.deadline ?? 'Not specified',
@@ -110,6 +110,28 @@ export async function parseOpportunities(
       description: item.description ?? '',
       source_url: item.source_url ?? '',
     }))
+
+    // Deduplication Level 2: Filter same title/source_url within parsing batch
+    const seenTitles = new Set<string>()
+    const seenUrls = new Set<string>()
+
+    const deduped: any[] = []
+    for (const opp of mapped) {
+      const lowerTitle = opp.title.trim().toLowerCase()
+      const lowerUrl = opp.source_url.trim().toLowerCase()
+      
+      let isDuplicate = false
+      if (lowerTitle && seenTitles.has(lowerTitle)) isDuplicate = true
+      if (lowerUrl && seenUrls.has(lowerUrl)) isDuplicate = true
+      
+      if (!isDuplicate) {
+        if (lowerTitle) seenTitles.add(lowerTitle)
+        if (lowerUrl) seenUrls.add(lowerUrl)
+        deduped.push(opp)
+      }
+    }
+
+    return deduped
   } catch (err) {
     console.error('Model returned malformed TOON or plain text:', rawText)
     console.error('Parse error:', err)

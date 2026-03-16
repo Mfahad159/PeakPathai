@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Opportunity } from '@/types'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
+import OpportunityCard from '@/components/opportunity/OpportunityCard'
 
 const COUNTRIES = [
   "Global", "United States", "United Kingdom", "Canada", "Australia", "Germany", 
@@ -11,8 +13,6 @@ const COUNTRIES = [
   "Singapore", "China", "New Zealand", "Ireland", "Italy", "Spain", "Norway", 
   "Denmark", "Finland", "Austria", "Belgium"
 ]
-
-import OpportunityCard from '@/components/opportunity/OpportunityCard'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface QuotaInfo {
@@ -155,7 +155,12 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen px-6 py-10">
-      <div className="mx-auto max-w-4xl space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto max-w-4xl space-y-6"
+      >
 
 
 
@@ -179,21 +184,37 @@ export default function DashboardPage() {
 
         {/* ── Unseen Alert ── */}
         {unseenCount > 0 && (
-          <div className="glass-card flex items-center justify-between border-orange-500/50 bg-orange-500/10 p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="glass-card flex items-center justify-between border-orange-500/50 bg-orange-500/10 p-4"
+          >
             <div className="flex items-center gap-3 text-orange-400">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 animate-pulse">
                 <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
               </svg>
               <span className="text-sm font-medium">You have {unseenCount} new {unseenCount === 1 ? 'opportunity' : 'opportunities'} to review!</span>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* ── Quota Bar ── */}
-        <QuotaBar quota={quota} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <QuotaBar quota={quota} />
+        </motion.div>
 
         {/* ── Search Button ── */}
-        <div className="glass-card p-6 text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="glass-card p-6 text-center"
+        >
           {!loading && !quotaError && (
             <>
               <div className="mb-2 text-2xl">🔍</div>
@@ -350,7 +371,7 @@ export default function DashboardPage() {
               </p>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* ── Error State ── */}
         {error && (
@@ -410,26 +431,37 @@ export default function DashboardPage() {
           if (loading || error) return null
 
           return (
-            <div className="mt-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="mt-6"
+            >
               <p className="mb-4 text-xs tracking-widest uppercase" style={{ color: 'var(--color-muted)' }}>
                 {displayedOpps.length} {activeTab === 'saved' ? 'saved opportunities' : 'opportunities found'}
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {displayedOpps.map((opp) => (
-                  <OpportunityCard 
-                    key={opp.id} 
-                    opportunity={opp} 
-                    onSaveToggle={(id, saved) => {
-                      setOpportunities(prev => prev.map(o => o.id === id ? { ...o, saved } : o))
-                    }}
-                  />
+                {displayedOpps.map((opp, i) => (
+                  <motion.div
+                    key={opp.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 * i + 0.5 }}
+                  >
+                    <OpportunityCard 
+                      opportunity={opp} 
+                      onSaveToggle={(id, saved) => {
+                        setOpportunities(prev => prev.map(o => o.id === id ? { ...o, saved } : o))
+                      }}
+                    />
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )
         })()}
 
-      </div>
+      </motion.div>
     </div>
   )
 }

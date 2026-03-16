@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 // ── Floating Glass Header ──────────────────────────────────────────────────────
 function Header() {
@@ -30,9 +32,20 @@ function Header() {
         >
           <div className="flex w-full items-center justify-between md:w-auto">
             {/* Logo */}
-            <span className="shrink-0 rounded border border-orange-500/60 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-orange-400 md:mr-4">
-              Peak<span className="text-white">Path</span>
-            </span>
+            <div className="flex shrink-0 items-center gap-2 md:mr-4">
+              <div className="relative h-8 w-8 overflow-hidden rounded-md bg-black/20 shrink-0 flex flex-col items-center justify-center border border-white/10">
+                <Image 
+                  src="/assets/logo_peak_path_ai.webp" 
+                  alt="PeakPath AI" 
+                  fill
+                  unoptimized
+                  className="object-contain scale-110"
+                />
+              </div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-orange-400">
+                Peak<span className="text-white">Path</span>
+              </span>
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button 
@@ -123,7 +136,7 @@ export default function LandingPage() {
 
       <Header />
 
-      {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
+        {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
       <section className="relative z-10 flex flex-col items-center justify-center px-6 pb-24 pt-40 text-center">
         {/* Glow */}
         <div
@@ -131,24 +144,43 @@ export default function LandingPage() {
           style={{ background: 'radial-gradient(ellipse, rgba(249,115,22,0.12) 0%, transparent 70%)' }}
         />
 
-        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-4 py-1.5 text-xs font-medium text-orange-400">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-4 py-1.5 text-xs font-medium text-orange-400"
+        >
           ✦ AI-Powered Scholarship Discovery
-        </div>
+        </motion.div>
 
-        <h1
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
           className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl"
           style={{ fontFamily: 'Georgia, serif' }}
         >
           Find the scholarships<br />
           <span className="text-orange-400">you actually deserve</span>
-        </h1>
+        </motion.h1>
 
-        <p className="mt-6 max-w-lg text-base leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+          className="mt-6 max-w-lg text-base leading-relaxed" 
+          style={{ color: 'var(--color-muted)' }}
+        >
           PeakPath AI scans thousands of scholarships, fellowships, and research
           opportunities — then ranks them by your exact degree, field, country, and funding preference.
-        </p>
+        </motion.p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+        >
           <Link
             href="/signup"
             className="rounded-xl bg-orange-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-900/40 transition-all hover:bg-orange-400 hover:scale-[1.03]"
@@ -162,36 +194,55 @@ export default function LandingPage() {
           >
             See how it works
           </a>
-        </div>
+        </motion.div>
 
         {/* Social proof row */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs" style={{ color: 'var(--color-muted)' }}>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs" 
+          style={{ color: 'var(--color-muted)' }}
+        >
           <span className="flex items-center gap-1.5"><span className="text-orange-400">★★★★★</span> 4.9/5 rating</span>
           <span className="h-3 w-px" style={{ background: 'var(--color-border)' }} />
           <span>Trusted in 40+ countries</span>
           <span className="h-3 w-px" style={{ background: 'var(--color-border)' }} />
           <span>Free to get started</span>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── 2. STATS STRIP ──────────────────────────────────────────────── */}
-      <section className="relative z-10 border-y px-8 py-12" style={{ borderColor: 'var(--color-border)' }}>
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 border-y px-8 py-12" 
+        style={{ borderColor: 'var(--color-border)' }}
+      >
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 sm:grid-cols-4">
           <Stat value="12,000+" label="Scholarships indexed" />
           <Stat value="40+" label="Countries covered" />
           <Stat value="95%" label="Match accuracy" />
           <Stat value="Free" label="Always free tier" />
         </div>
-      </section>
+      </motion.section>
 
       {/* ── 3. FEATURES ─────────────────────────────────────────────────── */}
       <section id="features" className="relative z-10 px-6 py-24">
         <div className="mx-auto max-w-5xl">
-          <div className="mb-14 text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.5 }}
+            className="mb-14 text-center"
+          >
             <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">Features</p>
             <h2 className="text-3xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>Everything you need to win funding</h2>
             <p className="mt-2 text-sm" style={{ color: 'var(--color-muted)' }}>No more manually browsing scholarship databases.</p>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {[
               {
@@ -224,15 +275,19 @@ export default function LandingPage() {
                 title: 'Instant Results',
                 desc: 'No waiting. Search runs in seconds and results are structured, readable, and ranked by relevance.',
               },
-            ].map((f) => (
-              <div
+            ].map((f, i) => (
+              <motion.div
                 key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="glass-card group p-6 transition-all hover:border-orange-500/30"
               >
                 <div className="mb-3 text-2xl">{f.icon}</div>
                 <h3 className="mb-1.5 text-sm font-semibold text-orange-400">{f.title}</h3>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>{f.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -241,18 +296,28 @@ export default function LandingPage() {
       {/* ── 4. HOW IT WORKS ─────────────────────────────────────────────── */}
       <section id="how" className="relative z-10 border-t px-6 py-24" style={{ borderColor: 'var(--color-border)' }}>
         <div className="mx-auto max-w-3xl">
-          <div className="mb-14 text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.5 }}
+            className="mb-14 text-center"
+          >
             <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">How it works</p>
             <h2 className="text-3xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>Up and running in 3 steps</h2>
-          </div>
+          </motion.div>
           <div className="space-y-6">
             {[
               { step: '01', title: 'Complete your profile', desc: 'Tell us your degree level, field, country, and funding preference. Takes 2 minutes.' },
               { step: '02', title: 'Run an AI search', desc: 'PeakPath AI queries Tavily + DeepSeek to find real-time opportunities matched to your profile.' },
               { step: '03', title: 'Apply with confidence', desc: 'Review ranked results, save your favourites, and get email reminders before deadlines.' },
-            ].map((s) => (
-              <div
+            ].map((s, i) => (
+              <motion.div
                 key={s.step}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
                 className="flex items-start gap-6 rounded-xl border p-6 transition-all hover:border-orange-500/20"
                 style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
               >
@@ -266,7 +331,7 @@ export default function LandingPage() {
                   <h3 className="text-sm font-semibold text-white">{s.title}</h3>
                   <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>{s.desc}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -275,10 +340,16 @@ export default function LandingPage() {
       {/* ── 5. TESTIMONIALS ─────────────────────────────────────────────── */}
       <section id="testimonials" className="relative z-10 border-t px-6 py-24" style={{ borderColor: 'var(--color-border)' }}>
         <div className="mx-auto max-w-5xl">
-          <div className="mb-14 text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.5 }}
+            className="mb-14 text-center"
+          >
             <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">Reviews</p>
             <h2 className="text-3xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>Scholars who found their path</h2>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {[
               {
@@ -299,9 +370,13 @@ export default function LandingPage() {
                 role: 'Undergraduate, University of Toronto',
                 country: '🇮🇷',
               },
-            ].map((t) => (
-              <div
+            ].map((t, i) => (
+              <motion.div
                 key={t.name}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="glass-card flex flex-col justify-between p-6"
               >
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>"{t.quote}"</p>
@@ -312,7 +387,7 @@ export default function LandingPage() {
                     <p className="text-xs" style={{ color: 'var(--color-muted)' }}>{t.role}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -321,10 +396,16 @@ export default function LandingPage() {
       {/* ── 6. FAQ ──────────────────────────────────────────────────────── */}
       <section id="faq" className="relative z-10 border-t px-6 py-24" style={{ borderColor: 'var(--color-border)' }}>
         <div className="mx-auto max-w-2xl">
-          <div className="mb-14 text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.5 }}
+            className="mb-14 text-center"
+          >
             <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">FAQ</p>
             <h2 className="text-3xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>Common questions</h2>
-          </div>
+          </motion.div>
           <div className="space-y-4">
             {[
               { q: 'Is PeakPath AI free to use?', a: 'Yes — you can run up to 5 searches per week for free. No credit card required.' },
@@ -332,9 +413,13 @@ export default function LandingPage() {
               { q: 'How is this different from Google?', a: 'PeakPath AI structures and ranks results based on your exact profile, not just keywords. You get a curated list, not 50 blue links.' },
               { q: 'Do you store my personal data?', a: 'Only your profile preferences (degree, field, country). We don\'t store search results or any sensitive information.' },
               { q: 'Can I apply through PeakPath AI?', a: 'Not yet — we link you directly to the official scholarship page. Application management is on the roadmap.' },
-            ].map((faq) => (
-              <details
+            ].map((faq, i) => (
+              <motion.details
                 key={faq.q}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="group glass-card overflow-hidden"
               >
                 <summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-medium text-white list-none">
@@ -344,7 +429,7 @@ export default function LandingPage() {
                 <p className="px-5 pb-5 text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
                   {faq.a}
                 </p>
-              </details>
+              </motion.details>
             ))}
           </div>
         </div>
@@ -356,7 +441,13 @@ export default function LandingPage() {
           className="pointer-events-none absolute left-1/2 top-0 h-64 w-96 -translate-x-1/2 rounded-full blur-[100px]"
           style={{ background: 'radial-gradient(ellipse, rgba(249,115,22,0.10) 0%, transparent 70%)' }}
         />
-        <div className="relative mx-auto max-w-xl">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.6 }}
+          className="relative mx-auto max-w-xl"
+        >
           <p className="mb-3 text-xs uppercase tracking-widest text-orange-400">Start today</p>
           <h2 className="text-4xl font-extrabold" style={{ fontFamily: 'Georgia, serif' }}>
             Your scholarship is<br />waiting to be found
@@ -370,7 +461,7 @@ export default function LandingPage() {
           >
             Find my scholarships — it's free →
           </Link>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── 8. FOOTER ───────────────────────────────────────────────────── */}

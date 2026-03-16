@@ -1,5 +1,6 @@
 import FloatingDock from '@/components/layout/FloatingDock'
 import UserProfileButton from '@/components/layout/UserProfileButton'
+import TopLeftLogo from '@/components/layout/TopLeftLogo'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,8 +13,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         className="page-grid pointer-events-none fixed inset-0 z-0"
       />
 
-      {/* Page content — pad bottom so dock doesn't overlap content */}
-      <main className="relative z-10 pb-24">
+      {/* Page content — pad top so top-navigation doesn't overlap content */}
+      <main className="relative z-10 pt-28 pb-10">
         {children}
       </main>
 
@@ -22,6 +23,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Top right floating profile / signout */}
       <UserProfileButton />
+
+      {/* Top left logo */}
+      <TopLeftLogo />
     </div>
   )
 }

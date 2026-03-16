@@ -1,4 +1,5 @@
 import FloatingDock from '@/components/layout/FloatingDock'
+import UserProfileButton from '@/components/layout/UserProfileButton'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Floating dock — only shown on authenticated app pages */}
       <FloatingDock />
+
+      {/* Top right floating profile / signout */}
+      <UserProfileButton />
     </div>
   )
 }

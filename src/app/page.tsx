@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { Menu, X } from 'lucide-react'
 
 // ── Floating Glass Header ──────────────────────────────────────────────────────
 function Header() {
   const [scrolled, setScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -15,39 +17,86 @@ function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4">
-      <nav
-        className="flex items-center gap-6 rounded-2xl px-5 py-3 transition-all duration-300"
-        style={{
-          background: scrolled ? 'rgba(11,14,26,0.85)' : 'rgba(11,14,26,0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.4)' : 'none',
-        }}
-      >
-        {/* Logo */}
-        <span className="rounded border border-orange-500/60 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-orange-400 mr-4">
-          Peak<span className="text-white">Path</span>
-        </span>
+      <div className="relative w-full md:w-auto">
+        <nav
+          className="flex w-full md:w-auto items-center justify-between gap-6 rounded-2xl px-5 py-3 transition-all duration-300"
+          style={{
+            background: scrolled || mobileMenuOpen ? 'rgba(11,14,26,0.85)' : 'rgba(11,14,26,0.4)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: scrolled || mobileMenuOpen ? '0 8px 32px rgba(0,0,0,0.4)' : 'none',
+          }}
+        >
+          <div className="flex w-full items-center justify-between md:w-auto">
+            {/* Logo */}
+            <span className="shrink-0 rounded border border-orange-500/60 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-orange-400 md:mr-4">
+              Peak<span className="text-white">Path</span>
+            </span>
 
-        {/* Links */}
-        <a href="#features" className="text-xs text-zinc-400 hover:text-white transition-colors">Features</a>
-        <a href="#how" className="text-xs text-zinc-400 hover:text-white transition-colors">How it works</a>
-        <a href="#testimonials" className="text-xs text-zinc-400 hover:text-white transition-colors">Reviews</a>
-        <a href="#faq" className="text-xs text-zinc-400 hover:text-white transition-colors">FAQ</a>
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden text-zinc-400 hover:text-white p-1"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
 
-        <div className="ml-4 flex items-center gap-2">
-          <Link href="/login" className="text-xs text-zinc-400 hover:text-white transition-colors px-3 py-1.5">
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-lg bg-orange-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-orange-400 transition-all hover:scale-[1.03]"
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-6">
+            <a href="#features" className="text-xs text-zinc-400 hover:text-white transition-colors">Features</a>
+            <a href="#how" className="text-xs text-zinc-400 hover:text-white transition-colors">How it works</a>
+            <a href="#testimonials" className="text-xs text-zinc-400 hover:text-white transition-colors">Reviews</a>
+            <a href="#faq" className="text-xs text-zinc-400 hover:text-white transition-colors">FAQ</a>
+          </div>
+
+          {/* Desktop Auth */}
+          <div className="hidden md:flex items-center gap-2 md:ml-4">
+            <Link href="/login" className="text-xs text-zinc-400 hover:text-white transition-colors px-3 py-1.5">
+              Sign in
+            </Link>
+            <Link
+              href="/signup"
+              className="rounded-lg bg-orange-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-orange-400 transition-all hover:scale-[1.03]"
+            >
+              Get started →
+            </Link>
+          </div>
+        </nav>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div 
+            className="absolute top-full left-0 right-0 mt-2 flex flex-col gap-4 rounded-2xl border p-5 text-center md:hidden"
+            style={{
+              background: 'rgba(11,14,26,0.95)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderColor: 'rgba(255,255,255,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+            }}
           >
-            Get started →
-          </Link>
-        </div>
-      </nav>
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">Features</a>
+            <a href="#how" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">How it works</a>
+            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">Reviews</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">FAQ</a>
+            
+            <div className="my-2 h-px w-full bg-white/10" />
+            
+            <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium text-zinc-300 hover:text-white">
+              Sign in
+            </Link>
+            <Link
+              href="/signup"
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-900/30 transition-all hover:bg-orange-400"
+            >
+              Get started — it's free
+            </Link>
+          </div>
+        )}
+      </div>
     </header>
   )
 }

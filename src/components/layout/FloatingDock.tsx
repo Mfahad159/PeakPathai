@@ -103,37 +103,6 @@ export default function FloatingDock() {
           )
         })}
 
-        {/* Divider */}
-        <div className="mx-1 h-5 w-px rounded-full" style={{ background: 'rgba(255,255,255,0.10)' }} />
-
-        {/* Sign out button */}
-        <form action="/api/auth/signout" method="post">
-          <button
-            type="submit"
-            onMouseEnter={() => setHoveredIndex(99)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            className="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all duration-200"
-            style={{
-              background: hoveredIndex === 99 ? 'rgba(248,113,113,0.10)' : 'transparent',
-              color: hoveredIndex === 99 ? '#f87171' : 'var(--color-muted)',
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            <span
-              className="overflow-hidden whitespace-nowrap text-xs font-medium transition-all duration-200"
-              style={{
-                maxWidth: hoveredIndex === 99 ? '60px' : '0px',
-                opacity: hoveredIndex === 99 ? 1 : 0,
-              }}
-            >
-              Sign out
-            </span>
-          </button>
-        </form>
       </nav>
     </div>
   )

@@ -173,11 +173,11 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-          className="mt-6 max-w-2xl text-base sm:text-xl leading-relaxed" 
+          className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed" 
           style={{ color: 'var(--color-muted)' }}
         >
-          PeakPath AI scans thousands of scholarships, fellowships, and research
-          opportunities — then ranks them by your exact degree, field, country, and funding preference.
+          <strong className="text-white font-medium">Stop missing scholarships and fellowships because you didn't know they existed.</strong><br/>
+          PeakPath AI scans thousands of opportunities and ranks them by your exact degree, field, country, and funding preference.
         </motion.p>
 
         <motion.div 
@@ -460,7 +460,8 @@ export default function LandingPage() {
             Your scholarship is<br />waiting to be found
           </h2>
           <p className="mt-4 text-base sm:text-xl" style={{ color: 'var(--color-muted)' }}>
-            Join thousands of students using AI to unlock funding opportunities they never knew existed.
+            Stop missing scholarships and fellowships because you didn't know they existed.<br/>
+            Join thousands of students using AI to unlock funding.
           </p>
           <Link
             href="/signup"

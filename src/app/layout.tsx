@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "PeakPath AI - Your Academic Journey",
   description: "Empowering your academic journey with AI-driven discovery.",
   icons: {
-    icon: '/assets/logo_peak_path_ai.webp'
+    icon: '/assets/logo_peak_path_ai.png'
   }
 };
 

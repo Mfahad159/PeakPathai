@@ -11,6 +11,14 @@ interface Props {
 }
 
 export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
+  // Clean up legacy AI hallucinations where "funded" text bled into the location field
+  let cleanLocation = opportunity.location || ''
+  if (cleanLocation.toLowerCase().includes('fund')) {
+    cleanLocation = cleanLocation.replace(/\(?(fully|partially|partial|full|any)?\s*(funded|funding)\)?/ig, '').trim()
+    cleanLocation = cleanLocation.replace(/^[,-\s]+|[,-\s]+$/g, '') // remove orphaned punctuation
+  }
+  const displayLocation = cleanLocation || 'Location not specified'
+
   const [isSaved, setIsSaved] = useState(opportunity.saved)
   const [isSaving, setIsSaving] = useState(false)
   const [realId, setRealId] = useState(opportunity.id)
@@ -107,7 +115,7 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
              <DollarSign className="w-3.5 h-3.5 mr-1" /> {opportunity.funding_type || 'Funding varies'}
            </span>
            <span className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-300">
-             <MapPin className="w-3.5 h-3.5 mr-1" /> {opportunity.location || 'Location not specified'}
+             <MapPin className="w-3.5 h-3.5 mr-1" /> {displayLocation}
            </span>
         </div>
         

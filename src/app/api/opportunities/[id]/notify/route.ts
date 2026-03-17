@@ -3,9 +3,9 @@ import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function PATCH(request: NextRequest, context: any) {
-  const { params } = context;
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id: opportunityId } = await params;
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,8 +32,6 @@ export async function PATCH(request: NextRequest, context: any) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
     
-    // params.id requires awaiting in next 15+ but typically next 14 app router it's available directly although Next.js 14 recommends destructuring but dynamic params is fine
-    const opportunityId = params.id
 
     const body = await request.json()
     const { notify_updates } = body

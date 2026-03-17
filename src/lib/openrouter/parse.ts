@@ -19,8 +19,8 @@ const elementSchema = z.object({
   title: z.string().describe("Name of the scholarship or program"),
   provider: z.string().describe("The organization offering the scholarship"),
   deadline: z.string().describe("The stated deadline date, or 'Not specified'"),
-  funding_type: z.string().describe("E.g. 'Fully Funded', 'Partial', 'Research Fellowship', etc."),
-  location: z.string().describe("Location, country or region of the program"),
+  funding_type: z.string().describe("Strictly financial coverage. E.g. 'Fully Funded', 'Partial', 'Research Fellowship'. MUST NOT contain geographic location."),
+  location: z.string().describe("Strictly geographic location (Country, City, or University). MUST NOT contain funding details (e.g. never write 'Fully Funded' here)."),
   field: z.string().describe("The field or major of study"),
   description: z.string().describe("A 1-2 sentence compelling summary of the opportunity"),
   source_url: z.string().describe("The direct URL to apply or read more")

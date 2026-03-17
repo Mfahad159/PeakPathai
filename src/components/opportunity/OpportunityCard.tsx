@@ -71,7 +71,7 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0b0e1a]/80 shadow flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10 transition-all w-full relative">
+    <div className="glass-card shadow flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-500/10 transition-all w-full relative overflow-hidden">
       
       {/* ── CardHeader ── */}
       <div className="flex flex-col space-y-1.5 p-6 pb-4">
@@ -130,7 +130,7 @@ export default function OpportunityCard({ opportunity, onSaveToggle }: Props) {
       </div>
 
       {/* ── CardFooter ── */}
-      <div className="p-6 pt-4 flex flex-col gap-3 border-t border-white/5 mt-auto bg-white/[0.02]">
+      <div className="p-6 pt-4 flex flex-col gap-3 border-t mt-auto bg-black/10" style={{ borderColor: 'var(--color-border)' }}>
          
          <div className="flex items-center justify-between w-full">
             <div className="text-xs">

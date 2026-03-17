@@ -138,11 +138,11 @@ function Stat({ value, label }: { value: string; label: string }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden text-white">
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden text-white">
       <Header />
 
         {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
-      <section className="relative z-10 flex flex-col items-center justify-center px-6 pb-24 pt-40 text-center">
+      <section className="relative z-10 flex flex-col items-center justify-center px-6 min-h-[calc(100vh-4rem)] text-center">
         {/* Glow */}
         <div
           className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 rounded-full blur-[140px]"
@@ -162,7 +162,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-          className="max-w-3xl text-5xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl"
+          className="max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl px-4"
           style={{ fontFamily: 'Georgia, serif' }}
         >
           Find the Opportunities<br />
@@ -173,7 +173,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-          className="mt-6 max-w-lg text-base leading-relaxed" 
+          className="mt-6 max-w-2xl text-base sm:text-xl leading-relaxed" 
           style={{ color: 'var(--color-muted)' }}
         >
           PeakPath AI scans thousands of scholarships, fellowships, and research
@@ -184,17 +184,17 @@ export default function LandingPage() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          className="mt-10 flex flex-col w-full px-4 sm:px-0 sm:w-auto sm:flex-row items-center justify-center gap-4"
         >
           <Link
             href="/signup"
-            className="rounded-xl bg-orange-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-900/40 transition-all hover:bg-orange-400 hover:scale-[1.03]"
+            className="w-full sm:w-auto text-center rounded-xl bg-orange-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-900/40 transition-all hover:bg-orange-400 hover:scale-[1.03]"
           >
             Find my scholarships →
           </Link>
           <a
             href="#how"
-            className="rounded-xl border px-8 py-3 text-sm font-medium transition-colors hover:border-white/30 hover:text-white"
+            className="w-full sm:w-auto text-center rounded-xl border px-8 py-3 text-sm font-medium transition-colors hover:border-white/30 hover:text-white"
             style={{ borderColor: 'var(--color-border)', color: 'var(--color-muted)' }}
           >
             See how it works
@@ -248,7 +248,7 @@ export default function LandingPage() {
             <h2 className="text-3xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>Everything you need to win funding</h2>
             <p className="mt-2 text-sm" style={{ color: 'var(--color-muted)' }}>No more manually browsing scholarship databases.</p>
           </motion.div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             {[
               {
                 icon: <Bot className="w-6 h-6 text-orange-400" />,
@@ -313,7 +313,7 @@ export default function LandingPage() {
             <p className="mb-2 text-xs uppercase tracking-widest text-orange-400">How it works</p>
             <h2 className="text-3xl font-bold" style={{ fontFamily: 'Georgia, serif' }}>Up and running in 3 steps</h2>
           </motion.div>
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
               { step: '01', title: 'Complete your profile', desc: 'Tell us your degree level, field, country, and funding preference. Takes 2 minutes.' },
               { step: '02', title: 'Run an AI search', desc: 'PeakPath AI queries Tavily + DeepSeek to find real-time opportunities matched to your profile.' },
@@ -459,12 +459,12 @@ export default function LandingPage() {
           <h2 className="text-4xl font-extrabold" style={{ fontFamily: 'Georgia, serif' }}>
             Your scholarship is<br />waiting to be found
           </h2>
-          <p className="mt-4 text-sm" style={{ color: 'var(--color-muted)' }}>
+          <p className="mt-4 text-base sm:text-xl" style={{ color: 'var(--color-muted)' }}>
             Join thousands of students using AI to unlock funding opportunities they never knew existed.
           </p>
           <Link
             href="/signup"
-            className="mt-8 inline-block rounded-xl bg-orange-500 px-10 py-3.5 text-sm font-semibold text-white shadow-xl shadow-orange-900/30 transition-all hover:bg-orange-400 hover:scale-[1.03]"
+            className="w-full sm:w-auto text-center mt-8 inline-block rounded-xl bg-orange-500 px-10 py-3.5 text-sm font-semibold text-white shadow-xl shadow-orange-900/30 transition-all hover:bg-orange-400 hover:scale-[1.03]"
           >
             Find my scholarships — it's free →
           </Link>

@@ -72,8 +72,8 @@ function QuotaBar({ quota }: { quota: QuotaInfo | null }) {
   const isExhausted = quota.searches_remaining <= 0
 
   return (
-    <div className="glass-card px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
-      <div className="flex-1">
+    <div className="glass-card px-5 py-4 flex flex-col justify-center h-full">
+      <div className="w-full">
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="font-medium text-white">Search Quota</span>
           <span className="font-semibold" style={{ color: isExhausted ? '#f87171' : 'var(--color-primary)' }}>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
+      <div className="min-h-screen pt-16 pb-10 px-6">
         <div className="mx-auto max-w-4xl space-y-6">
           <div className="animate-pulse mb-6">
             <div className="h-3 w-16 bg-white/10 rounded mb-3"></div>
@@ -281,7 +281,9 @@ export default function DashboardPage() {
              <div className="h-4 w-16 bg-white/5 rounded animate-pulse"></div>
           </div>
           
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
+            <SkeletonCard />
+            <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
@@ -293,7 +295,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
+    <div className="min-h-screen pt-16 pb-10 px-6">
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -309,11 +311,6 @@ export default function DashboardPage() {
             <p className="text-xs uppercase tracking-widest" style={{ color: 'var(--color-muted)' }}>Overview</p>
             <h1 className="mt-1 text-3xl font-bold text-white relative inline-block" style={{ fontFamily: 'Georgia, serif' }}>
               Welcome back, {firstName}
-              {unseenCount > 0 && (
-                <span className="absolute -top-1 -right-4 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg animate-bounce">
-                  {unseenCount}
-                </span>
-              )}
             </h1>
             <p className="mt-1 text-xs" style={{ color: 'var(--color-muted)' }}>
               {profile?.field_of_study} · {profile?.country} · {profile?.degree_level}
@@ -338,61 +335,65 @@ export default function DashboardPage() {
           </motion.div>
         )}
 
-        {/* ── Search Preference Summary ── */}
-        <motion.div
-           initial={{ opacity: 0, y: 15 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.4, delay: 0.25 }}
-           className="glass-card mb-6"
-        >
-          <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
-             <div className="flex items-center gap-2">
-                <Search className="h-4 w-4 text-orange-400" />
-                <h3 className="text-sm font-bold text-white">Search Preferences</h3>
-             </div>
-             <Link href="/profile" className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white transition-colors">
-                <Edit2 className="h-3 w-3" /> Edit Profile
-             </Link>
-          </div>
-          
-          <div className="p-5">
-             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-               <div>
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Degree Level</p>
-                  <p className="text-sm text-zinc-200">{LABELS[profile?.degree_level] || profile?.degree_level || '—'}</p>
+        {/* ── Top Layout Row ── */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-6">
+          {/* ── Search Preference Summary ── */}
+          <motion.div
+             initial={{ opacity: 0, y: 15 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.4, delay: 0.25 }}
+             className="glass-card flex-1"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+               <div className="flex items-center gap-2">
+                  <Search className="h-4 w-4 text-orange-400" />
+                  <h3 className="text-sm font-bold text-white">Search Preferences</h3>
                </div>
-               <div>
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Field of Study</p>
-                  <p className="text-sm text-zinc-200">{profile?.field_of_study || '—'}</p>
+               <Link href="/profile" className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white transition-colors">
+                  <Edit2 className="h-3 w-3" /> Edit Profile
+               </Link>
+            </div>
+            
+            <div className="p-5">
+               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                 <div>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Degree Level</p>
+                    <p className="text-sm text-zinc-200">{LABELS[profile?.degree_level] || profile?.degree_level || '—'}</p>
+                 </div>
+                 <div>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Field of Study</p>
+                    <p className="text-sm text-zinc-200">{profile?.field_of_study || '—'}</p>
+                 </div>
+                 <div>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Country</p>
+                    <p className="text-sm text-zinc-200">{profile?.country || '—'}</p>
+                 </div>
+                 <div>
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Funding</p>
+                    <p className="text-sm text-zinc-200">{LABELS[profile?.funding_preference] || profile?.funding_preference || '—'}</p>
+                 </div>
                </div>
-               <div>
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Country</p>
-                  <p className="text-sm text-zinc-200">{profile?.country || '—'}</p>
-               </div>
-               <div>
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 mb-1">Funding</p>
-                  <p className="text-sm text-zinc-200">{LABELS[profile?.funding_preference] || profile?.funding_preference || '—'}</p>
-               </div>
-             </div>
-             {(!profile?.degree_level || !profile?.field_of_study || !profile?.country || !profile?.funding_preference) && (
-               <div className="mt-4 flex items-start gap-2 rounded bg-yellow-500/10 p-3 text-yellow-500/90 border border-yellow-500/20">
-                 <Info className="h-4 w-4 shrink-0 mt-0.5" />
-                 <p className="text-xs">
-                   Some preferences are missing — your results may be broad. <Link href="/profile" className="font-semibold underline hover:text-yellow-400 text-yellow-500">Complete your profile</Link> for better matches.
-                 </p>
-               </div>
-             )}
-          </div>
-        </motion.div>
+               {(!profile?.degree_level || !profile?.field_of_study || !profile?.country || !profile?.funding_preference) && (
+                 <div className="mt-4 flex items-start gap-2 rounded bg-yellow-500/10 p-3 text-yellow-500/90 border border-yellow-500/20">
+                   <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                   <p className="text-xs">
+                     Some preferences are missing — your results may be broad. <Link href="/profile" className="font-semibold underline hover:text-yellow-400 text-yellow-500">Complete your profile</Link> for better matches.
+                   </p>
+                 </div>
+               )}
+            </div>
+          </motion.div>
 
-        {/* ── Quota Bar ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <QuotaBar quota={quota} />
-        </motion.div>
+          {/* ── Quota Bar ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="lg:w-1/3"
+          >
+            <QuotaBar quota={quota} />
+          </motion.div>
+        </div>
 
         {/* ── Search Button ── */}
         <motion.div 
@@ -555,7 +556,9 @@ export default function DashboardPage() {
           {loading && (
             <div className="mt-8 space-y-4 text-center">
               <p className="text-sm font-medium animate-pulse text-white">Searching the web and parsing results…</p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-left">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 text-left">
+                <SkeletonCard />
+                <SkeletonCard />
                 <SkeletonCard />
                 <SkeletonCard />
                 <SkeletonCard />
@@ -598,16 +601,21 @@ export default function DashboardPage() {
         )}
 
         {/* ── Tabs ── */}
-        <div className="mt-8 flex border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="mt-8 flex border-b w-full overflow-x-auto" style={{ borderColor: 'var(--color-border)' }}>
           <button
             onClick={() => { setActiveTab('all'); setVisibleCount(10); }}
-            className={`cursor-pointer px-4 py-3 text-sm font-semibold transition-colors ${activeTab === 'all' ? 'border-b-2 border-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`flex-1 sm:flex-none relative cursor-pointer px-4 py-3 text-sm font-semibold transition-colors ${activeTab === 'all' ? 'border-b-2 border-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             All Results
+            {unseenCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-lg">
+                {unseenCount} New
+              </span>
+            )}
           </button>
           <button
             onClick={() => { setActiveTab('saved'); setVisibleCount(10); }}
-            className={`cursor-pointer px-4 py-3 text-sm font-semibold transition-colors ${activeTab === 'saved' ? 'border-b-2 border-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={`flex-1 sm:flex-none cursor-pointer px-4 py-3 text-sm font-semibold transition-colors ${activeTab === 'saved' ? 'border-b-2 border-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
           >
             Saved
           </button>
@@ -657,7 +665,7 @@ export default function DashboardPage() {
               <p className="mb-4 text-xs tracking-widest uppercase" style={{ color: 'var(--color-muted)' }}>
                 {displayedOpps.length} {activeTab === 'saved' ? 'saved opportunities' : 'opportunities found'}
               </p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {displayedOpps.slice(0, visibleCount).map((opp, i) => (
                   <motion.div
                     key={opp.id}
@@ -694,13 +702,13 @@ export default function DashboardPage() {
 
       {/* ── Toast Bookmark Prompt ── */}
       {showBookmarkToast && (
-        <div className="fixed bottom-24 md:bottom-10 right-4 sm:right-10 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
-           <div className="glass-card flex items-center gap-4 bg-orange-600/90 py-3 px-5 shadow-2xl backdrop-blur border border-white/20">
+        <div className="fixed bottom-0 left-0 right-0 w-full sm:w-auto sm:bottom-10 sm:left-auto sm:right-10 z-[100] animate-in slide-in-from-bottom-5 sm:slide-in-from-right-10 fade-in duration-300">
+           <div className="glass-card flex items-center justify-between gap-4 bg-orange-600/90 py-3 px-5 sm:rounded-xl rounded-none shadow-2xl backdrop-blur border-t sm:border border-white/20">
              <div className="text-white">
                 <p className="text-sm font-bold">Action Required</p>
                 <p className="text-xs text-white/90">Bookmark to save the opportunity, otherwise it will disappear with signout.</p>
              </div>
-             <button onClick={() => setShowBookmarkToast(false)} className="text-white/70 hover:text-white transition-colors">
+             <button onClick={() => setShowBookmarkToast(false)} className="text-white/70 hover:text-white transition-colors p-2 sm:p-0">
                <X size={16} />
              </button>
            </div>

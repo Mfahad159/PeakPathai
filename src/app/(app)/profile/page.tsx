@@ -87,85 +87,87 @@ export default function ProfilePage() {
     const hasError = saveError?.field === field
 
     return (
-      <div className="group relative rounded-xl border p-4 transition-all hover:border-white/20" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>{label}</p>
+      <div className="group relative sm:flex sm:items-center sm:justify-between rounded-xl border p-4 transition-all hover:border-white/20" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
+        <p className="mb-2 sm:mb-0 sm:w-1/3 text-xs font-semibold uppercase tracking-wider shrink-0" style={{ color: 'var(--color-muted)' }}>{label}</p>
         
-        {isEditing ? (
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex items-center gap-3">
-              {type === 'select' ? (
-                <select
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  disabled={saveLoading}
-                  className="flex-1 rounded-lg border bg-transparent px-3 py-2 text-sm text-white focus:border-orange-500 focus:outline-none disabled:opacity-50 [&>option]:bg-[#0b0e1a]"
-                  style={{ borderColor: 'var(--color-border)' }}
-                >
-                  <option value="" disabled>Select {label}</option>
-                  {options?.map(opt => {
-                    const val = typeof opt === 'string' ? opt : opt.value
-                    const lbl = typeof opt === 'string' ? opt : opt.label
-                    return <option key={val} value={val}>{lbl}</option>
-                  })}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  disabled={saveLoading}
-                  className="flex-1 rounded-lg border bg-transparent px-3 py-2 text-sm text-white focus:border-orange-500 focus:outline-none disabled:opacity-50"
-                  style={{ borderColor: 'var(--color-border)' }}
-                  autoFocus
-                  onKeyDown={(e) => e.key === 'Enter' && handleSave(field)}
-                />
-              )}
-              
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  onClick={() => handleSave(field)}
-                  disabled={saveLoading}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-400 disabled:opacity-50"
-                >
-                  {saveLoading ? <span className="text-xs font-bold">...</span> : <Check className="h-4 w-4" />}
-                </button>
-                <button
-                  onClick={() => { setEditingField(null); setSaveError(null) }}
-                  disabled={saveLoading}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border text-zinc-400 hover:bg-white/5 hover:text-white disabled:opacity-50"
-                  style={{ borderColor: 'var(--color-border)' }}
-                >
-                  <X className="h-4 w-4" />
-                </button>
+        <div className="flex-1 w-full">
+          {isEditing ? (
+            <div className="flex flex-col">
+              <div className="flex flex-col sm:flex-row gap-3">
+                {type === 'select' ? (
+                  <select
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    disabled={saveLoading}
+                    className="w-full sm:flex-1 rounded-lg border bg-transparent px-3 py-2.5 sm:py-2 text-sm text-white focus:border-orange-500 focus:outline-none disabled:opacity-50 [&>option]:bg-[#0b0e1a]"
+                    style={{ borderColor: 'var(--color-border)' }}
+                  >
+                    <option value="" disabled>Select {label}</option>
+                    {options?.map(opt => {
+                      const val = typeof opt === 'string' ? opt : opt.value
+                      const lbl = typeof opt === 'string' ? opt : opt.label
+                      return <option key={val} value={val}>{lbl}</option>
+                    })}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    disabled={saveLoading}
+                    className="w-full sm:flex-1 rounded-lg border bg-transparent px-3 py-2.5 sm:py-2 text-sm text-white focus:border-orange-500 focus:outline-none disabled:opacity-50"
+                    style={{ borderColor: 'var(--color-border)' }}
+                    autoFocus
+                    onKeyDown={(e) => e.key === 'Enter' && handleSave(field)}
+                  />
+                )}
+                
+                <div className="flex shrink-0 w-full sm:w-auto items-center gap-2">
+                  <button
+                    onClick={() => handleSave(field)}
+                    disabled={saveLoading}
+                    className="flex flex-1 sm:flex-none h-11 sm:h-9 w-full sm:w-9 items-center justify-center rounded-lg bg-orange-500 text-white hover:bg-orange-400 disabled:opacity-50"
+                  >
+                    {saveLoading ? <span className="text-xs font-bold">...</span> : <Check className="h-4 w-4" />}
+                  </button>
+                  <button
+                    onClick={() => { setEditingField(null); setSaveError(null) }}
+                    disabled={saveLoading}
+                    className="flex flex-1 sm:flex-none h-11 sm:h-9 w-full sm:w-9 items-center justify-center rounded-lg border text-zinc-400 hover:bg-white/5 hover:text-white disabled:opacity-50"
+                    style={{ borderColor: 'var(--color-border)' }}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
+              {hasError && (
+                <p className="flex items-center gap-1.5 text-xs text-red-400 mt-2">
+                  <AlertCircle className="h-3 w-3" />
+                  {saveError.message}
+                </p>
+              )}
             </div>
-            {hasError && (
-              <p className="flex items-center gap-1.5 text-xs text-red-400 mt-1">
-                <AlertCircle className="h-3 w-3" />
-                {saveError.message}
+          ) : (
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base font-medium text-white break-words">
+                {field === 'funding_preference' ? Object.values(FUNDING_PREFS).find(f => f.value === value)?.label || value : value}
               </p>
-            )}
-          </div>
-        ) : (
-          <div className="flex items-center justify-between">
-            <p className="text-base font-medium text-white">
-              {field === 'funding_preference' ? Object.values(FUNDING_PREFS).find(f => f.value === value)?.label || value : value}
-            </p>
-            <button
-              onClick={() => handleEdit(field, value)}
-              className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-500 opacity-0 transition-all hover:bg-white/5 hover:text-white group-hover:opacity-100 focus:opacity-100"
-              aria-label={`Edit ${label}`}
-            >
-              <Edit2 className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+              <button
+                onClick={() => handleEdit(field, value)}
+                className="flex shrink-0 h-8 w-8 items-center justify-center rounded-md text-zinc-500 opacity-100 sm:opacity-0 transition-all hover:bg-white/5 hover:text-white group-hover:opacity-100 focus:opacity-100 ml-3"
+                aria-label={`Edit ${label}`}
+              >
+                <Edit2 className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
+    <div className="min-h-screen pt-16 pb-10 px-6">
       <div className="mx-auto max-w-3xl space-y-8">
         
         {/* Header */}
@@ -195,11 +197,13 @@ export default function ProfilePage() {
             <section className="space-y-4">
               <h2 className="text-lg font-semibold text-white">Account Basics</h2>
               
-              <div className="rounded-xl border p-4" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>Email Address</p>
-                <div className="flex items-center justify-between">
-                  <p className="text-base font-medium text-zinc-400">{email}</p>
-                  <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] uppercase font-bold text-zinc-500">Read Only</span>
+              <div className="group relative sm:flex sm:items-center sm:justify-between rounded-xl border p-4" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>
+                <p className="mb-2 sm:mb-0 sm:w-1/3 text-xs font-semibold uppercase tracking-wider shrink-0" style={{ color: 'var(--color-muted)' }}>Email Address</p>
+                <div className="flex-1 w-full">
+                  <div className="flex items-center justify-between w-full">
+                    <p className="text-base font-medium text-zinc-400 break-words">{email}</p>
+                    <span className="shrink-0 rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] uppercase font-bold text-zinc-500 ml-3">Read Only</span>
+                  </div>
                 </div>
               </div>
 
@@ -209,7 +213,7 @@ export default function ProfilePage() {
             {/* Academic Profile */}
             <section className="space-y-4">
               <h2 className="text-lg font-semibold text-white">Academic Details</h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="flex flex-col gap-4">
                 {renderEditableField('Degree Level', 'degree_level', 'select', DEGREE_LEVELS)}
                 {renderEditableField('Field of Study', 'field_of_study')}
                 {renderEditableField('Citizenship / Country', 'country', 'select', COUNTRIES)}
@@ -223,7 +227,7 @@ export default function ProfilePage() {
               <p className="mb-6 text-sm text-zinc-400">Signing out will terminate your current active session securely.</p>
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-2 rounded-lg bg-red-500/10 px-5 py-2.5 text-sm font-semibold text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+                className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-red-500/10 px-6 py-3 text-sm font-semibold text-red-500 transition-colors hover:bg-red-500 hover:text-white"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out

@@ -45,16 +45,7 @@ export default function FloatingDock() {
 
   return (
     <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:bottom-auto md:top-6">
-      <nav
-        className="flex items-center gap-1 rounded-2xl border px-3 py-2 shadow-2xl"
-        style={{
-          background: 'rgba(13,16,30,0.85)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset',
-        }}
-      >
+      <nav className="flex items-center gap-1 px-3 py-2 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {NAV_ITEMS.map((item, i) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           const isHovered = hoveredIndex === i

@@ -24,17 +24,17 @@ export default async function ExplorePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Fetch some random recent opportunities (mock explore feed)
+  // Fetch global opportunities but exclude the ones the current user already owns or has saved
   const { data: globalOpps } = await supabase
     .from('opportunities')
     .select('*')
+    .neq('user_id', user.id) // Don't show the user's own generated queries here
     .order('created_at', { ascending: false })
-    .limit(4)
+    .limit(10)
 
   return (
-    <div className="min-h-screen pt-20 md:pt-28 pb-10 px-6">
+    <div className="min-h-screen pt-16 pb-10 px-6">
       <div className="mx-auto max-w-4xl space-y-6">
-        
 
         
         <div>

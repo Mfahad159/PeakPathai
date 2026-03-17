@@ -31,7 +31,7 @@ export default function SignupPage() {
       {/* Glow */}
       <div className="pointer-events-none absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-orange-900/20 blur-[100px]" />
 
-      <div className="relative z-10 w-full max-w-sm">
+      <div className="relative z-10 w-full max-w-md mt-16 sm:mt-0">
         {/* Logo */}
         <div className="mb-8 text-center">
           <span className="inline-block rounded border border-orange-500/60 px-2 py-1 text-xs font-bold uppercase tracking-widest text-orange-400">
@@ -41,13 +41,7 @@ export default function SignupPage() {
           <p className="mt-1 text-xs text-zinc-500">New accounts are created automatically on first sign-in</p>
         </div>
 
-        <div className="rounded-xl border border-white/8 bg-white/3 p-8 backdrop-blur-sm">
-          {error && (
-            <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-400">
-              {error}
-            </div>
-          )}
-
+        <div className="rounded-xl sm:border border-white/8 bg-transparent sm:bg-white/3 px-4 py-8 sm:p-8 backdrop-blur-sm">
           <button
             onClick={handleGoogleSignup}
             disabled={loading}
@@ -62,6 +56,11 @@ export default function SignupPage() {
             {loading ? 'Redirecting…' : 'Continue with Google'}
           </button>
 
+          {error && (
+            <div className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-400">
+              {error}
+            </div>
+          )}
           <p className="mt-5 text-center text-xs text-zinc-600">
             Already have an account?{' '}
             <Link href="/login" className="text-orange-400 hover:text-orange-300">

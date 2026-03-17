@@ -1,38 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { User } from '@supabase/supabase-js'
+import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, LogOut, Search, User as UserIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 
-interface NavbarProps {
-  user: User | null
-  profileName?: string
-}
-
-export default function Navbar({ user, profileName }: NavbarProps) {
+export default function Navbar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const supabase = createClient()
-
-  const displayName = profileName?.split(' ')[0] || user?.email?.split('@')[0] || 'Scholar'
+  const [displayName, setDisplayName] = useState('Scholar')
+  
+  useEffect(() => {
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setDisplayName(user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Scholar')
+      }
+    }
+    loadUser()
+  }, [])
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: <Search className="w-4 h-4" /> },
+    { href: '/explore', label: 'Explore', icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> },
     { href: '/profile', label: 'Profile', icon: <UserIcon className="w-4 h-4" /> },
   ]
 
   const handleSignOut = async () => {
     await fetch('/api/auth/signout', { method: 'POST' })
     await supabase.auth.signOut()
-    window.location.href = '/'
+    router.push('/')
   }
 
   return (
-    <nav className="relative z-50 border-b border-white/10 bg-[#0b0e1a]/80 backdrop-blur-md">
+    <nav className="fixed top-0 left-0 right-0 w-full z-50 border-b border-white/10 bg-[#0b0e1a] shadow-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Logo */}

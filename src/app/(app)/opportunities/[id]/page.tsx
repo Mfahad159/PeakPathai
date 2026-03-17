@@ -48,12 +48,11 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
     const t = type.toLowerCase()
     if (t.includes('fully') || t.includes('full')) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
     if (t.includes('partial')) return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-    return 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
   }
 
   return (
-    <div className="min-h-screen px-6 py-10">
-      <div className="mx-auto max-w-3xl space-y-6">
+    <div className="min-h-screen pt-16 pb-10 px-6">
+      <div className="mx-auto max-w-2xl space-y-6">
         
         {/* ── Back Navigation ── */}
         <Link 
@@ -75,14 +74,14 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
             {opp.title}
           </h1>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <span className={`inline-flex items-center rounded-md border px-3 py-1 text-sm font-medium ${getFundingColor(opp.funding_type)}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+            <span className={`inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium ${getFundingColor(opp.funding_type)}`}>
               {opp.funding_type || 'Funding varies'}
             </span>
-            <span className="inline-flex items-center rounded-md border bg-white/5 px-3 py-1 text-sm font-medium text-zinc-300 border-white/10">
+            <span className="inline-flex items-center rounded-md border bg-white/5 px-3 py-2 text-sm font-medium text-zinc-300 border-white/10 break-words">
               📍 {opp.location || 'Location not specified'}
             </span>
-            <span className="inline-flex items-center rounded-md border bg-orange-500/10 px-3 py-1 text-sm font-medium text-orange-400 border-orange-500/20">
+            <span className="sm:col-span-2 inline-flex items-center rounded-md border bg-orange-500/10 px-3 py-2 text-sm font-medium text-orange-400 border-orange-500/20 break-words">
               🗓 {opp.deadline || 'No deadline found'}
             </span>
           </div>

@@ -88,25 +88,23 @@ function NavButtons({
   canNext: boolean
 }) {
   return (
-    <div className="mt-8 flex items-center justify-between">
-      {step > 1 ? (
+    <div className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 w-full">
+      {step > 1 && (
         <button
           onClick={onBack}
-          className="rounded-md border px-5 py-2.5 text-sm font-medium transition"
+          className="w-full sm:w-auto rounded-md border px-5 py-2.5 text-sm font-medium transition"
           style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-muted)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-muted)')}
         >
           ← Back
         </button>
-      ) : (
-        <div />
       )}
       {step < TOTAL_STEPS ? (
         <button
           onClick={onNext}
           disabled={!canNext}
-          className="rounded-md px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto rounded-md px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'var(--color-primary)' }}
         >
           Continue →
@@ -115,7 +113,7 @@ function NavButtons({
         <button
           onClick={onFinish}
           disabled={loading}
-          className="rounded-md px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto rounded-md px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
           style={{ background: 'var(--color-primary)' }}
         >
           {loading ? 'Saving…' : 'Finish Setup ✓'}
@@ -205,7 +203,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-hidden">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-x-hidden">
       {/* Glow */}
       <div className="glow-blob" />
 
@@ -243,7 +241,7 @@ export default function OnboardingPage() {
           {step === 2 && (
             <>
               <StepHeading title="What's your degree level?" subtitle="Select the level you're applying for or currently studying." />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {DEGREE_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
@@ -368,7 +366,7 @@ export default function OnboardingPage() {
           {step === 5 && (
             <>
               <StepHeading title="What's your funding preference?" subtitle="We'll prioritise opportunities matching this." />
-              <div className="flex flex-col gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {FUNDING_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
@@ -411,9 +409,9 @@ export default function OnboardingPage() {
                     key={label}
                     className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
                   >
-                    <div>
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 items-start sm:items-center">
                       <p className="text-xs text-zinc-500">{label}</p>
-                      <p className="mt-0.5 text-sm font-medium text-white">{value}</p>
+                      <p className="sm:col-span-2 text-sm font-medium text-white break-words">{value}</p>
                     </div>
                     <button
                       onClick={() => setStep(editStep)}

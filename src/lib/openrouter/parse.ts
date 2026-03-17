@@ -7,6 +7,8 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 })
 
+const AI_MODEL = openrouter.chat('google/gemini-2.0-flash-lite-preview-02-05:free')
+
 const SYSTEM_PROMPT = `You are a strict data extraction engine. You do NOT chat. 
 Your ONLY job is to extract scholarship and research opportunity data from the raw web search results provided by the user.
 If a field is missing, assign it a default fallback string (e.g. 'Not specified', 'Unknown').
@@ -29,7 +31,7 @@ export async function parseOpportunitiesStream(rawResults: TavilyResult[]) {
   const userContentData = JSON.stringify(rawResults.map(r => ({ url: r.url, snippet: r.content, title: r.title, content: r.content })))
   
   const result = streamObject({
-    model: openrouter.chat('google/gemini-2.0-flash-lite-preview-02-05:free'),
+    model: AI_MODEL,
     system: SYSTEM_PROMPT,
     messages: [
       { role: 'user', content: userContentHeader + userContentData }
@@ -50,7 +52,7 @@ export async function parseOpportunitiesBatch(rawResults: TavilyResult[]) {
   const userContentData = JSON.stringify(rawResults.map(r => ({ url: r.url, snippet: r.content, title: r.title, content: r.content })))
   
   const { object } = await generateObject({
-    model: openrouter.chat('google/gemini-2.0-flash-lite-preview-02-05:free'),
+    model: AI_MODEL,
     system: SYSTEM_PROMPT,
     messages: [
       { role: 'user', content: userContentHeader + userContentData }
